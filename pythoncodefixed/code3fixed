@@ -1,0 +1,17 @@
+# Constants for better readability
+MIN_AGE = 18
+
+def process_numbers(numbers, positive=True):
+    """Refactored function to handle both sum and subtraction logic."""
+    total = sum(n if (n > 0) == positive else -n for n in numbers)
+    return total
+
+def check_age(age):
+    """Checks if a person is allowed based on a predefined minimum age."""
+    print("Allowed" if age > MIN_AGE else "Not Allowed")
+
+# Calling the functions
+nums = [1, 2, 3, 4, 5]
+print("Final value:", process_numbers(nums, positive=False))  # Replaces `a(x)`
+print("Sum:", process_numbers(nums, positive=True))  # Replaces `b(x)`
+check_age(20)

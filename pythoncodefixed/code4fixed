@@ -1,0 +1,23 @@
+# Constants for better readability
+HIGH_DISCOUNT_THRESHOLD = 1000
+HIGH_DISCOUNT_RATE = 0.10
+LOW_DISCOUNT_RATE = 0.05
+
+def calculate_total_and_average(numbers):
+    """Returns the total sum and average of a list, handling empty lists safely."""
+    if not numbers:
+        return 0, 0  # Safe handling of empty input
+    total = sum(n if n % 2 == 0 else -n for n in numbers)
+    return total, total / len(numbers)
+
+def calculate_discount(price):
+    """Applies discount based on predefined thresholds."""
+    discount = HIGH_DISCOUNT_RATE if price > HIGH_DISCOUNT_THRESHOLD else LOW_DISCOUNT_RATE
+    return price * (1 - discount)
+
+# Function calls
+nums = [10, 15, 20, 25, 30]
+total, avg = calculate_total_and_average(nums)
+print("Total:", total)
+print("Average:", avg)
+print("Final price:", calculate_discount(1200))
