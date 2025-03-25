@@ -1,0 +1,90 @@
+import json
+from typing import List
+
+FILE_NAME = "expenses.json"
+
+class Expense:
+    def __init__(self, name: str, cost: float, category: str):
+        self.name = name.strip()
+        self.cost = cost
+        self.category = category if category in ["Food", "Travel", "Bills"] else "Other"
+
+    def to_dict(self):
+        return vars(self)
+
+class ExpenseTracker:
+    def __init__(self):
+        self.expenses: List[Expense] = self.load_expenses()
+
+    def load_expenses(self):
+        try:
+            with open(FILE_NAME, "r") as f:
+                return [Expense(**data) for data in json.load(f)]
+        except (FileNotFoundError, json.JSONDecodeError):
+            return []
+
+    def save_expenses(self):
+        try:
+            with open(FILE_NAME, "w") as f:
+                json.dump([e.to_dict() for e in self.expenses], f)
+        except IOError:
+            print("⚠️ Error saving expenses!")
+
+    def add_expense(self):
+        name = input("Enter expense name: ").strip()
+        try:
+            cost = float(input("Enter cost: ").strip())
+            category = input("Enter category (Food, Travel, Bills): ").strip()
+            self.expenses.append(Expense(name, cost, category))
+            self.save_expenses()
+            print(f"✅ Expense '{name}' added!")
+        except ValueError:
+            print("❌ Invalid cost! Must be a number.")
+
+    def view_expenses(self):
+        if not self.expenses:
+            print("📭 No expenses recorded.")
+            return
+        print("\n💰 Expense List:")
+        for i, e in enumerate(self.expenses, 1):
+            print(f"{i}. {e.name} - ${e.cost} - Category: {e.category}")
+
+    def remove_expense(self):
+        self.view_expenses()
+        try:
+            num = int(input("Enter expense number to remove: ").strip())
+            if 1 <= num <= len(self.expenses):
+                removed = self.expenses.pop(num - 1)
+                self.save_expenses()
+                print(f"🗑️ Removed {removed.name}")
+            else:
+                print("❌ Invalid number!")
+        except ValueError:
+            print("❌ Please enter a valid number.")
+
+class ExpenseApp:
+    def __init__(self):
+        self.tracker = ExpenseTracker()
+
+    def start(self):
+        actions = {
+            "1": self.tracker.add_expense,
+            "2": self.tracker.view_expenses,
+            "3": self.tracker.remove_expense,
+            "4": self.exit_app,
+        }
+        print("💸 Welcome to Expense Tracker!")
+        while True:
+            print("\n1️⃣ Add Expense\n2️⃣ View Expenses\n3️⃣ Remove Expense\n4️⃣ Exit")
+            action = actions.get(input("Choose an option: ").strip(), self.invalid_choice)
+            action()
+
+    def invalid_choice(self):
+        print("⚠️ Invalid choice! Try again.")
+
+    def exit_app(self):
+        print("👋 Exiting... Goodbye!")
+        exit()
+
+if __name__ == "__main__":
+    ExpenseApp().start()
