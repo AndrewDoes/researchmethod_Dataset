@@ -1,0 +1,86 @@
+import random
+
+class Character:
+    def __init__(self, name: str, hp: int, attack_range: tuple[int, int], potions: int = 3):
+        self.name = name
+        self.hp = hp
+        self.max_hp = hp
+        self.attack_range = attack_range
+        self.potions = potions
+
+    def is_alive(self) -> bool:
+        return self.hp > 0
+
+    def attack(self, target: "Character"):
+        damage = random.randint(*self.attack_range)
+        target.hp = max(target.hp - damage, 0)
+        print(f"{self.name} attacks {target.name} for {damage} damage! {target.name} HP: {target.hp}/{target.max_hp}")
+
+    def use_potion(self):
+        if self.potions > 0 and self.hp < self.max_hp:
+            heal = min(20, self.max_hp - self.hp)
+            self.hp += heal
+            self.potions -= 1
+            print(f"{self.name} used a potion! Restored {heal} HP. HP: {self.hp}/{self.max_hp}. Potions left: {self.potions}")
+        else:
+            print(f"{self.name} has no potions left!")
+
+class EnemyAI:
+    def __init__(self, enemy: Character):
+        self.enemy = enemy
+
+    def take_turn(self, player: Character):
+        if self.enemy.hp < 30 and self.enemy.potions > 0:
+            self.enemy.use_potion()
+        else:
+            self.enemy.attack(player)
+
+class Game:
+    def __init__(self):
+        self.player = self.create_player()
+        self.enemy = Character("Enemy", 100, (5, 15), potions=1)
+        self.enemy_ai = EnemyAI(self.enemy)
+
+    def create_player(self) -> Character:
+        name = input("Enter your name: ").strip() or "Player"
+        return Character(name, 100, (10, 20))
+
+    def get_player_choice(self) -> str:
+        while True:
+            print("\n1. Attack\n2. Use Potion\n3. Run")
+            choice = input("Enter choice: ").strip()
+            if choice in {"1", "2", "3"}:
+                return choice
+            print("Invalid choice. Please enter 1, 2, or 3.")
+
+    def player_turn(self):
+        choice = self.get_player_choice()
+        if choice == "1":
+            self.player.attack(self.enemy)
+        elif choice == "2":
+            self.player.use_potion()
+        elif choice == "3":
+            print("You ran away! Game over.")
+            return False  # Exit battle
+        return True  # Continue battle
+
+    def battle(self):
+        while self.player.is_alive() and self.enemy.is_alive():
+            if not self.player_turn():
+                return
+            self.enemy_ai.take_turn(self.player)
+
+        self.end_game()
+
+    def end_game(self):
+        if not self.player.is_alive():
+            print("You died! Game over.")
+        elif not self.enemy.is_alive():
+            print("You defeated the enemy! You win!")
+
+    def start(self):
+        print("Welcome to the Ultimate Battle Game!")
+        self.battle()
+
+if __name__ == "__main__":
+    Game().start()
