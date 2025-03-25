@@ -1,0 +1,115 @@
+import json
+
+class Priority:
+    HIGH = "High"
+    MEDIUM = "Medium"
+    LOW = "Low"
+    ALL = [HIGH, MEDIUM, LOW]
+
+class Task:
+    def __init__(self, name, priority):
+        self.name = name
+        self.priority = priority
+
+    def to_dict(self):
+        return {"name": self.name, "priority": self.priority}
+
+class TaskManager:
+    DATA_FILE = "tasks.json"
+
+    def __init__(self):
+        self.tasks = []
+        self.load_tasks()
+
+    def add_task(self, name, priority):
+        if priority not in Priority.ALL:
+            print("❌ Invalid priority! Defaulting to Medium.")
+            priority = Priority.MEDIUM
+        self.tasks.append(Task(name, priority))
+        self.save_tasks()
+        print(f"✅ Task '{name}' added with priority {priority}.")
+
+    def view_tasks(self):
+        if not self.tasks:
+            print("📭 No tasks available.")
+            return
+        print("\n📌 Task List:")
+        for index, task in enumerate(self.tasks, start=1):
+            print(f"{index}. {task.name} - Priority: {task.priority}")
+
+    def remove_task(self, task_number):
+        task = self.get_task(task_number)
+        if task:
+            self.tasks.remove(task)
+            self.save_tasks()
+            print(f"✅ Task '{task.name}' removed.")
+        else:
+            print("❌ Invalid task number!")
+
+    def complete_task(self, task_number):
+        task = self.get_task(task_number)
+        if task:
+            self.tasks.remove(task)
+            self.save_tasks()
+            print(f"🎉 Task '{task.name}' marked as complete.")
+        else:
+            print("❌ Invalid task number!")
+
+    def get_task(self, task_number):
+        if not task_number.isdigit() or not (1 <= int(task_number) <= len(self.tasks)):
+            return None
+        return self.tasks[int(task_number) - 1]
+
+    def save_tasks(self):
+        with open(self.DATA_FILE, "w") as f:
+            json.dump([task.to_dict() for task in self.tasks], f)
+
+    def load_tasks(self):
+        try:
+            with open(self.DATA_FILE, "r") as f:
+                data = json.load(f)
+                self.tasks = [Task(d["name"], d["priority"]) for d in data]
+        except (FileNotFoundError, json.JSONDecodeError):
+            self.tasks = []
+
+class TaskApp:
+    def __init__(self):
+        self.manager = TaskManager()
+
+    def run(self):
+        print("📅 Welcome to Task Scheduler!")
+        options = {
+            "1": self.add_task,
+            "2": self.manager.view_tasks,
+            "3": self.complete_task,
+            "4": self.remove_task,
+            "5": self.exit_app
+        }
+        while True:
+            print("\n1. Add Task\n2. View Tasks\n3. Complete Task\n4. Remove Task\n5. Exit")
+            choice = input("Choose an option: ").strip()
+            action = options.get(choice, self.invalid_choice)
+            action()
+
+    def add_task(self):
+        name = input("Enter task name: ").strip()
+        priority = input("Enter priority (High, Medium, Low): ").strip()
+        self.manager.add_task(name, priority)
+
+    def complete_task(self):
+        task_number = input("Enter task number to mark as complete: ").strip()
+        self.manager.complete_task(task_number)
+
+    def remove_task(self):
+        task_number = input("Enter task number to remove: ").strip()
+        self.manager.remove_task(task_number)
+
+    def invalid_choice(self):
+        print("❌ Invalid choice! Please try again.")
+
+    def exit_app(self):
+        print("🚪 Exiting Task Scheduler... Goodbye!")
+        exit()
+
+if __name__ == "__main__":
+    TaskApp().run()
