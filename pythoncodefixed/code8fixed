@@ -1,0 +1,114 @@
+import json
+
+class Student:
+    def __init__(self, name, student_id, grade):
+        self.name = name
+        self.student_id = student_id
+        self.grade = grade
+
+    def update_grade(self, new_grade):
+        self.grade = new_grade
+
+    def to_dict(self):
+        return {"name": self.name, "student_id": self.student_id, "grade": self.grade}
+
+class StudentManager:
+    DATA_FILE = "students.json"
+
+    def __init__(self):
+        self.students = []
+        self.load_students()
+
+    def add_student(self, name, student_id, grade):
+        if self.get_student(student_id):
+            print("❌ Student ID already exists!")
+            return
+        student = Student(name, student_id, grade)
+        self.students.append(student)
+        self.save_students()
+        print(f"✅ Student {name} (ID: {student_id}) added with grade {grade}.")
+
+    def view_students(self):
+        if not self.students:
+            print("📭 No students available.")
+            return
+        print("\n--- Student List ---")
+        for student in self.students:
+            print(f"{student.name} (ID: {student.student_id}) - Grade: {student.grade}")
+
+    def update_grade(self, student_id, new_grade):
+        student = self.get_student(student_id)
+        if student:
+            student.update_grade(new_grade)
+            self.save_students()
+            print(f"✅ Updated grade for {student.name} (ID: {student_id}) to {new_grade}.")
+        else:
+            print("❌ Student not found!")
+
+    def remove_student(self, student_id):
+        student = self.get_student(student_id)
+        if student:
+            self.students.remove(student)
+            self.save_students()
+            print(f"✅ Student {student.name} (ID: {student_id}) removed.")
+        else:
+            print("❌ Student not found!")
+
+    def get_student(self, student_id):
+        return next((s for s in self.students if s.student_id == student_id), None)
+
+    def save_students(self):
+        with open(self.DATA_FILE, "w") as f:
+            json.dump([s.to_dict() for s in self.students], f)
+
+    def load_students(self):
+        try:
+            with open(self.DATA_FILE, "r") as f:
+                data = json.load(f)
+                self.students = [Student(d["name"], d["student_id"], d["grade"]) for d in data]
+        except (FileNotFoundError, json.JSONDecodeError):
+            self.students = []
+
+class StudentApp:
+    def __init__(self):
+        self.manager = StudentManager()
+
+    def start(self):
+        print("🎓 Welcome to the Student Management System!")
+        options = {
+            "1": self.add_student,
+            "2": self.manager.view_students,
+            "3": self.update_grade,
+            "4": self.remove_student,
+            "5": self.quit_app
+        }
+        while True:
+            print("\n1. Add Student\n2. View Students\n3. Update Grade\n4. Remove Student\n5. Quit")
+            choice = input("Enter choice: ").strip()
+            action = options.get(choice, self.invalid_choice)
+            action()
+
+    def add_student(self):
+        name = input("Enter student name: ").strip()
+        student_id = input("Enter student ID: ").strip()
+        grade = input("Enter student grade: ").strip()
+        self.manager.add_student(name, student_id, grade)
+
+    def update_grade(self):
+        student_id = input("Enter student ID to update grade: ").strip()
+        new_grade = input("Enter new grade: ").strip()
+        self.manager.update_grade(student_id, new_grade)
+
+    def remove_student(self):
+        student_id = input("Enter student ID to remove: ").strip()
+        self.manager.remove_student(student_id)
+
+    def invalid_choice(self):
+        print("❌ Invalid choice! Please try again.")
+
+    def quit_app(self):
+        print("🚪 Exiting... Goodbye!")
+        exit()
+
+if __name__ == "__main__":
+    StudentApp().start()
