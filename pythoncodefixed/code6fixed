@@ -1,0 +1,101 @@
+import json
+
+class Task:
+    def __init__(self, description: str, priority: str):
+        self.description = description
+        self.priority = priority if priority in ["High", "Medium", "Low"] else "Low"
+        self.completed = False
+
+    def mark_done(self):
+        self.completed = True
+
+    def to_dict(self):
+        return {"description": self.description, "priority": self.priority, "completed": self.completed}
+
+class ToDoList:
+    def __init__(self):
+        self.tasks = []
+        self.load_tasks()
+
+    def add_task(self, description: str, priority: str):
+        task = Task(description, priority)
+        self.tasks.append(task)
+        self.save_tasks()
+        print(f"Task '{description}' added with priority {priority}.")
+
+    def view_tasks(self):
+        if not self.tasks:
+            print("No tasks available.")
+            return
+        print("\n--- To-Do List ---")
+        for i, task in enumerate(self.tasks, start=1):
+            status = "Done" if task.completed else "Not Done"
+            print(f"{i}. {task.description} - {status} - Priority: {task.priority}")
+
+    def mark_done(self, task_num: int):
+        if 1 <= task_num <= len(self.tasks):
+            self.tasks[task_num - 1].mark_done()
+            self.save_tasks()
+            print(f"Task '{self.tasks[task_num - 1].description}' marked as done.")
+        else:
+            print("Invalid task number.")
+
+    def remove_task(self, task_num: int):
+        if 1 <= task_num <= len(self.tasks):
+            removed_task = self.tasks.pop(task_num - 1)
+            self.save_tasks()
+            print(f"Task '{removed_task.description}' removed.")
+        else:
+            print("Invalid task number.")
+
+    def save_tasks(self):
+        with open("tasks.json", "w") as f:
+            json.dump([task.to_dict() for task in self.tasks], f)
+
+    def load_tasks(self):
+        try:
+            with open("tasks.json", "r") as f:
+                data = json.load(f)
+                self.tasks = [Task(d["description"], d["priority"]) for d in data]
+                for i, task in enumerate(self.tasks):
+                    task.completed = data[i]["completed"]
+        except (FileNotFoundError, json.JSONDecodeError):
+            self.tasks = []
+
+class ToDoApp:
+    def __init__(self):
+        self.todo_list = ToDoList()
+
+    def start(self):
+        print("Welcome to the Clean To-Do List!")
+        while True:
+            print("\n1. Add Task\n2. View Tasks\n3. Mark Task as Done\n4. Remove Task\n5. Quit")
+            choice = input("Enter choice: ").strip()
+            if choice == "1":
+                desc = input("Enter task description: ").strip()
+                prio = input("Enter priority (High, Medium, Low): ").strip()
+                self.todo_list.add_task(desc, prio)
+            elif choice == "2":
+                self.todo_list.view_tasks()
+            elif choice == "3":
+                self.todo_list.view_tasks()
+                try:
+                    num = int(input("Enter task number to mark as done: ").strip())
+                    self.todo_list.mark_done(num)
+                except ValueError:
+                    print("Invalid input. Please enter a number.")
+            elif choice == "4":
+                self.todo_list.view_tasks()
+                try:
+                    num = int(input("Enter task number to remove: ").strip())
+                    self.todo_list.remove_task(num)
+                except ValueError:
+                    print("Invalid input. Please enter a number.")
+            elif choice == "5":
+                print("Exiting...")
+                break
+            else:
+                print("Invalid choice, try again.")
+
+if __name__ == "__main__":
+    ToDoApp().start()
