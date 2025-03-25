@@ -1,0 +1,106 @@
+class Book:
+    def __init__(self, title: str, author: str, year: int):
+        self.title = title
+        self.author = author
+        self.year = max(0, year)
+        self.is_borrowed = False
+
+    def borrow(self):
+        if self.is_borrowed:
+            return False
+        self.is_borrowed = True
+        return True
+
+    def return_book(self):
+        if not self.is_borrowed:
+            return False
+        self.is_borrowed = False
+        return True
+
+class Library:
+    def __init__(self):
+        self.books = []
+
+    def add_book(self):
+        title = input("Enter book title: ").strip()
+        author = input("Enter author: ").strip()
+        try:
+            year = int(input("Enter year: "))
+            self.books.append(Book(title, author, year))
+            print(f"✅ Added '{title}' by {author} ({year}).")
+        except ValueError:
+            print("❌ Invalid year!")
+
+    def view_books(self):
+        if not self.books:
+            print("📭 No books available.")
+            return
+        print("\n=== Library Books ===")
+        for i, book in enumerate(self.books, 1):
+            status = "Borrowed" if book.is_borrowed else "Available"
+            print(f"{i}. {book.title} by {book.author} ({book.year}) - {status}")
+
+    def borrow_book(self):
+        self.view_books()
+        try:
+            index = int(input("Enter book number to borrow: ")) - 1
+            if 0 <= index < len(self.books):
+                if self.books[index].borrow():
+                    print(f"📖 Borrowed '{self.books[index].title}' by {self.books[index].author}.")
+                else:
+                    print("❌ This book is already borrowed!")
+            else:
+                print("❌ Invalid book number!")
+        except ValueError:
+            print("❌ Invalid input!")
+
+    def return_book(self):
+        borrowed_books = [book for book in self.books if book.is_borrowed]
+
+        if not borrowed_books:
+            print("📭 No borrowed books.")
+            return
+
+        print("\n=== Borrowed Books ===")
+        for i, book in enumerate(borrowed_books, 1):
+            print(f"{i}. {book.title} by {book.author}")
+
+        try:
+            index = int(input("Enter book number to return: ")) - 1
+            if 0 <= index < len(borrowed_books):
+                if borrowed_books[index].return_book():
+                    print(f"🔄 Returned '{borrowed_books[index].title}'.")
+                else:
+                    print("❌ This book is not borrowed!")
+            else:
+                print("❌ Invalid book number!")
+        except ValueError:
+            print("❌ Invalid input!")
+
+class LibraryApp:
+    def __init__(self):
+        self.library = Library()
+
+    def start(self):
+        actions = {
+            "1": self.library.add_book,
+            "2": self.library.view_books,
+            "3": self.library.borrow_book,
+            "4": self.library.return_book,
+            "5": self.exit_app,
+        }
+        print("📚 Welcome to Library Manager!")
+        while True:
+            print("\n1️⃣ Add Book\n2️⃣ View Books\n3️⃣ Borrow Book\n4️⃣ Return Book\n5️⃣ Exit")
+            action = actions.get(input("Choose an option: ").strip(), self.invalid_choice)
+            action()
+
+    def invalid_choice(self):
+        print("❌ Invalid choice! Try again.")
+
+    def exit_app(self):
+        print("👋 Exiting... Goodbye!")
+        exit()
+
+if __name__ == "__main__":
+    LibraryApp().start()
