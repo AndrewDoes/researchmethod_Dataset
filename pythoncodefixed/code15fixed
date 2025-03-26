@@ -1,0 +1,76 @@
+TAX_RATES = {
+    "Electronics": 18,
+    "Clothing": 5,
+    "Food": 12
+}
+
+class Product:
+    def __init__(self, name, category, price, stock):
+        self.name = name
+        self.category = category
+        self.price = price
+        self.stock = stock
+        self.tax = TAX_RATES.get(category, 8)
+
+    def update(self, category, price, stock):
+        self.category = category
+        self.price = price
+        self.stock = stock
+        self.tax = TAX_RATES.get(category, 8)
+
+    def __str__(self):
+        return f"Name: {self.name}, Category: {self.category}, Price: {self.price}, Stock: {self.stock}, Tax: {self.tax}%"
+
+class ProductManager:
+    def __init__(self):
+        self.products = []
+
+    def add_product(self):
+        name = input("Enter product name: ")
+        category = input("Enter category: ")
+        price = input("Enter price: ")
+        stock = input("Enter stock quantity: ")
+        self.products.append(Product(name, category, price, stock))
+        print("Product Added!")
+
+    def display_products(self):
+        if not self.products:
+            print("No products found.")
+            return
+        print("\n--- Product List ---")
+        for p in self.products:
+            print(p)
+
+    def update_product(self):
+        prod_name = input("Enter product name to update: ")
+        for p in self.products:
+            if p.name == prod_name:
+                category = input("Enter new category: ")
+                price = input("Enter new price: ")
+                stock = input("Enter new stock quantity: ")
+                p.update(category, price, stock)
+                print("Product Updated!")
+                return
+        print("Product not found!")
+
+    def delete_product(self):
+        prod_name = input("Enter product name to delete: ")
+        self.products = [p for p in self.products if p.name != prod_name]
+        print("Product Deleted!")
+
+def main():
+    manager = ProductManager()
+    actions = {
+        "1": manager.add_product,
+        "2": manager.display_products,
+        "3": manager.update_product,
+        "4": manager.delete_product,
+        "5": lambda: exit("Exiting...")
+    }
+    
+    while True:
+        print("\n1. Add Product\n2. Display Products\n3. Update Product\n4. Delete Product\n5. Exit")
+        action = actions.get(input("Enter choice: "), lambda: print("Invalid choice, try again."))
+        action()
+
+main()
