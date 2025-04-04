@@ -80,7 +80,8 @@ class VehicleRegistry:
         self.vehicle_models[(model_info.brand, model_info.model)] = model_info
 
     def find_model_info(self, brand: str, model: str) -> Optional[VehicleModelInfo]:
-        """Finds vehicle model info for a brand and model. If no info can be found, None is returned."""
+        """Finds vehicle model info for a brand and model.
+        If no info can be found, None is returned."""
         return self.vehicle_models.get((brand, model))
 
     # Below is the function used before changing self.vehicle_models to a dictionary
