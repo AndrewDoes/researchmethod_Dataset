@@ -1,0 +1,3 @@
+Fix login
+Update docs
+Deploy new build
