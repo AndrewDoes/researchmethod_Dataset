@@ -5,7 +5,7 @@ Code 2 : 21.28 - success
 Code 3 : 13.25 - success
 Code 4 : 10.01 - success
 Code 5 : 13.10 - success
-Code 6 :
+Code 6 : 12.17 - success 
 Code 7 :
 Code 8 : 
 Code 9 :
