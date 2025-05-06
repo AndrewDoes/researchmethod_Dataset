@@ -1,82 +1,79 @@
 import random
+from typing import List
 
 class MenuItem:
-    def __init__(self, n, p, d=""):
-        self.name = n
-        self.price = p
-        self.description = d
+    def __init__(self, name: str, price: float, description: str = ""):
+        self.name = name
+        self.price = price
+        self.description = description
 
-    def get_info(self):
+    def get_info(self) -> str:
         return f"{self.name} - ${self.price:.2f}: {self.description}"
 
 class Order:
+    DISCOUNT_THRESHOLD = 3
+    DISCOUNT_AMOUNT = 2
+
     def __init__(self):
-        self.items = []
+        self.items: List[MenuItem] = []
         self.total = 0.0
         self.order_id = random.randint(1000, 9999)
         self.payment_method = ""
         self.is_paid = False
 
-    def add_item(self, item):
+    def add_item(self, item: MenuItem) -> None:
         self.items.append(item)
         self.total += item.price
 
-    def remove_item(self, item):
+    def remove_item(self, item: MenuItem) -> None:
         if item in self.items:
             self.items.remove(item)
             self.total -= item.price
 
-    def print_order(self):
+    def print_order(self) -> None:
         print(f"Order ID: {self.order_id}")
         for item in self.items:
             print(item.get_info())
         print(f"Total: ${self.total:.2f}")
-        if self.is_paid:
-            print("Paid")
-        else:
-            print("Not Paid")
+        print("Paid" if self.is_paid else "Not Paid")
 
-    def pay(self, method):
+    def pay(self, method: str) -> None:
         self.payment_method = method
         self.is_paid = True
         print(f"Payment successful with {method}.")
 
-    def apply_discount(self):
-        if len(self.items) > 3:
-            self.total -= 2
+    def apply_discount(self) -> None:
+        if len(self.items) > self.DISCOUNT_THRESHOLD:
+            self.total -= self.DISCOUNT_AMOUNT
             print("Discount applied.")
 
 class Cafe:
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.name = name
-        self.menu = []
-        self.orders = []
+        self.menu: List[MenuItem] = []
+        self.orders: List[Order] = []
 
-    def add_menu_item(self, item):
+    def add_menu_item(self, item: MenuItem) -> None:
         self.menu.append(item)
 
-    def show_menu(self):
+    def show_menu(self) -> None:
         print(f"Menu for {self.name}:")
         for item in self.menu:
             print(item.get_info())
 
-    def take_order(self, order):
+    def take_order(self, order: Order) -> None:
         self.orders.append(order)
         print(f"Order {order.order_id} has been placed.")
 
-    def show_orders(self):
+    def show_orders(self) -> None:
         for order in self.orders:
             order.print_order()
 
-    def total_sales(self):
-        total = 0.0
-        for order in self.orders:
-            total += order.total
-        return total
+    def total_sales(self) -> float:
+        return sum(order.total for order in self.orders)
 
-    def generate_report(self):
-        total_sales = self.total_sales()
-        print(f"Total sales: ${total_sales:.2f}")
+    def generate_report(self) -> None:
+        print(f"Total sales: ${self.total_sales():.2f}")
         print(f"Number of orders: {len(self.orders)}")
 
 def main():

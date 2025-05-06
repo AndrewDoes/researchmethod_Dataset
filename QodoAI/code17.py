@@ -2,6 +2,8 @@ import time
 import random
 
 class Task:
+    PRIORITY_LABELS = {1: "Low", 2: "Medium", 3: "High"}
+
     def __init__(self, title, desc, due, status="pending", priority=1):
         self.title = title
         self.desc = desc
@@ -15,31 +17,26 @@ class Task:
 
     def start(self):
         self.start_time = time.time()
-        self.logs.append("Task started")
+        self.log_activity("Task started")
 
     def stop(self):
         self.end_time = time.time()
-        self.logs.append("Task stopped")
+        self.log_activity("Task stopped")
 
     def log_activity(self, msg):
         self.logs.append(msg)
 
     def calculate_duration(self):
-        return self.end_time - self.start_time
+        if self.start_time and self.end_time:
+            return self.end_time - self.start_time
+        return 0
 
-    def update_status(self, s):
-        self.status = s
-        if s == "completed":
-            self.logs.append("Completed")
-        elif s == "cancelled":
-            self.logs.append("Cancelled")
+    def update_status(self, status):
+        self.status = status
+        self.log_activity(f"Status updated to {status}")
 
     def display_info(self):
-        print("Title:", self.title)
-        print("Description:", self.desc)
-        print("Due:", self.due)
-        print("Priority:", self.priority)
-        print("Status:", self.status)
+        print(f"Title: {self.title}\nDescription: {self.desc}\nDue: {self.due}\nPriority: {self.get_priority_value()}\nStatus: {self.status}")
 
     def print_logs(self):
         for log in self.logs:
@@ -49,28 +46,21 @@ class Task:
         self.due += days
 
     def get_priority_value(self):
-        if self.priority == 1:
-            return "Low"
-        elif self.priority == 2:
-            return "Medium"
-        elif self.priority == 3:
-            return "High"
-        else:
-            return "Unknown"
+        return self.PRIORITY_LABELS.get(self.priority, "Unknown")
 
 class TaskManager:
+    TAGS = ["urgent", "review", "optional", "bug"]
+
     def __init__(self):
         self.task_list = []
-        self.last_task = None
 
-    def create_task(self, t, d, due, p=1):
-        task = Task(t, d, due, priority=p)
+    def create_task(self, title, desc, due, priority=1):
+        task = Task(title, desc, due, priority=priority)
         self.task_list.append(task)
-        self.last_task = task
 
     def show_tasks(self):
-        for t in self.task_list:
-            t.display_info()
+        for task in self.task_list:
+            task.display_info()
             print("---")
 
     def remove_task(self, task):
@@ -78,53 +68,41 @@ class TaskManager:
             self.task_list.remove(task)
 
     def remove_task_by_title(self, title):
-        for t in self.task_list:
-            if t.title == title:
-                self.task_list.remove(t)
-                return
+        self.task_list = [task for task in self.task_list if task.title != title]
 
     def count_completed(self):
-        count = 0
-        for t in self.task_list:
-            if t.status == "completed":
-                count += 1
-        return count
+        return sum(1 for task in self.task_list if task.status == "completed")
 
     def auto_complete_low_priority(self):
-        for t in self.task_list:
-            if t.priority == 1:
-                t.update_status("completed")
+        for task in self.task_list:
+            if task.priority == 1:
+                task.update_status("completed")
 
-    def find_by_priority(self, p):
-        found = []
-        for t in self.task_list:
-            if t.priority == p:
-                found.append(t)
-        return found
+    def find_by_priority(self, priority):
+        return [task for task in self.task_list if task.priority == priority]
 
-    def export_task_titles(self):
-        f = open("tasks.txt", "w")
-        for t in self.task_list:
-            f.write(t.title + "\n")
-        f.close()
+    def export_task_titles(self, filename="tasks.txt"):
+        with open(filename, "w") as f:
+            for task in self.task_list:
+                f.write(task.title + "\n")
 
     def add_random_tag_to_all(self):
-        tags = ["urgent", "review", "optional", "bug"]
-        for t in self.task_list:
-            t.tags.append(random.choice(tags))
+        for task in self.task_list:
+            task.tags.append(random.choice(self.TAGS))
 
 # Main flow
-mgr = TaskManager()
-mgr.create_task("Fix login", "Users can’t log in after update", 3, 2)
-mgr.create_task("Update docs", "Add API usage examples", 5, 1)
-mgr.create_task("Deploy new build", "Push version 2.1", 2, 3)
+if __name__ == "__main__":
+    mgr = TaskManager()
+    mgr.create_task("Fix login", "Users can’t log in after update", 3, 2)
+    mgr.create_task("Update docs", "Add API usage examples", 5, 1)
+    mgr.create_task("Deploy new build", "Push version 2.1", 2, 3)
 
-mgr.show_tasks()
-mgr.task_list[0].start()
-time.sleep(0.1)
-mgr.task_list[0].stop()
-mgr.task_list[0].print_logs()
+    mgr.show_tasks()
+    mgr.task_list[0].start()
+    time.sleep(0.1)
+    mgr.task_list[0].stop()
+    mgr.task_list[0].print_logs()
 
-mgr.auto_complete_low_priority()
-mgr.export_task_titles()
-mgr.add_random_tag_to_all()
+    mgr.auto_complete_low_priority()
+    mgr.export_task_titles()
+    mgr.add_random_tag_to_all()

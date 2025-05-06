@@ -10,13 +10,13 @@ Code 7 : 12.36 - success
 Code 8 : 11.71 - success
 Code 9 : 11.94 - success
 Code 10: 14.08 - success
-Code 11:
-Code 12:
-Code 13:
-Code 14:
-Code 15:
-Code 16:
-Code 17:
-Code 18:
-Code 19:
-Code 20:
+Code 11: 26.81 - success
+Code 12: 17.70 - success
+Code 13: 15.14 - success
+Code 14: 12.35 - success
+Code 15: 14.69 - success
+Code 16: 10.91 - success
+Code 17: 18.76 - success
+Code 18: 19.05 - success
+Code 19: 13.56 - success
+Code 20: 18.24 - success

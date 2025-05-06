@@ -17,15 +17,15 @@ class Drink:
 
     def get_description(self):
         desc = f"{self.size} {self.name} - ${self.price}"
-        if not self.ice:
-            desc += " | No Ice"
-        if not self.sugar:
-            desc += " | No Sugar"
-        if self.custom_note != "":
-            desc += f" | Note: {self.custom_note}"
+        desc += " | No Ice" if not self.ice else ""
+        desc += " | No Sugar" if not self.sugar else ""
+        desc += f" | Note: {self.custom_note}" if self.custom_note else ""
         return desc
 
 class Order:
+    DISCOUNT_THRESHOLD = 3
+    DISCOUNT_AMOUNT = 1
+
     def __init__(self):
         self.drinks = []
         self.total = 0.0
@@ -37,14 +37,17 @@ class Order:
     def add_drink(self, drink):
         self.drinks.append(drink)
         self.total += drink.price
-        if len(self.drinks) > 3:
-            self.total -= 1  # arbitrary discount
+        self.apply_discount()
+
+    def apply_discount(self):
+        if len(self.drinks) > self.DISCOUNT_THRESHOLD:
+            self.total -= self.DISCOUNT_AMOUNT
             self.discount_applied = True
 
     def print_order(self):
         print(f"Order ID: {self.order_id}")
-        for d in self.drinks:
-            print(d.get_description())
+        for drink in self.drinks:
+            print(drink.get_description())
         print(f"Total: ${self.total}")
         if self.discount_applied:
             print("Discount applied!")
@@ -83,17 +86,21 @@ class Barista:
         print(f"Barista {self.name} served {self.orders_served} orders today.")
 
 # Sample usage
-drink1 = Drink("Green Tea", "Medium", 3.5)
-drink2 = Drink("Latte", "Large", 4.5)
-drink2.customize(False, True, "Extra hot")
+def main():
+    drink1 = Drink("Green Tea", "Medium", 3.5)
+    drink2 = Drink("Latte", "Large", 4.5)
+    drink2.customize(False, True, "Extra hot")
 
-order = Order()
-order.add_drink(drink1)
-order.add_drink(drink2)
-order.pay("Credit Card")
-order.print_order()
+    order = Order()
+    order.add_drink(drink1)
+    order.add_drink(drink2)
+    order.pay("Credit Card")
+    order.print_order()
 
-barista = Barista("Lina")
-barista.take_order(order)
-barista.serve_order()
-barista.report()
+    barista = Barista("Lina")
+    barista.take_order(order)
+    barista.serve_order()
+    barista.report()
+
+if __name__ == "__main__":
+    main()
