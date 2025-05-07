@@ -1,73 +1,95 @@
-items = []
-taxRate = 0.1
-discThresh = 100
-discPerc = 0.05
+"""
+Basic example of a shopping cart system.
+"""
 
-def additem():
-    global items
-    name = input("Enter item name: ")
-    p = input("Enter price: ")
-    q = input("Enter quantity: ")
-    items.append((name, float(p), int(q)))
+from dataclasses import dataclass
+from typing import List
 
-def printItems():
-    global items
-    print("\n--- Items List ---")
-    for i in range(len(items)):
-        print(f"{items[i][0]} x{items[i][2]} - ${items[i][1] * items[i][2]:.2f}")
+@dataclass
+class Item:
+    """Class representing an item in the shopping cart."""
 
-def calcTotal():
-    global items
-    total = 0
-    for i in range(len(items)):
-        total += items[i][1] * items[i][2]
-    return total
+    name: str
+    price: float
+    quantity: int
 
-def calcTax():
-    global items
-    total = 0
-    for i in range(len(items)):
-        total += items[i][1] * items[i][2]
-    return total * taxRate
+    @property
+    def total_price(self) -> float:
+        """Total price of the item."""
+        return self.price * self.quantity
 
-def applyDisc():
-    global items
-    total = 0
-    for i in range(len(items)):
-        total += items[i][1] * items[i][2]
-    if total > discThresh:
-        return total * (1 - discPerc)
-    return total
+class ShoppingCart:
+    """Class representing a shopping cart."""
 
-def printReciept():
-    global items
-    total = calcTotal()
-    tax = calcTax()
-    discounted_price = applyDisc()
-    final_total = discounted_price + tax
+    def __init__(self) -> None:
+        self.items: List[Item] = []
+        self.tax_rate = 0.1
+        self.discount_threshold = 100
+        self.discount_percentage = 0.05
 
-    print("\n--- Receipt ---")
-    for i in range(len(items)):
-        print(f"{items[i][0]} x{items[i][2]} - ${items[i][1] * items[i][2]:.2f}")
-    print(f"\nSubtotal: ${total:.2f}")
-    print(f"Discounted Price: ${discounted_price:.2f}")
-    print(f"Tax: ${tax:.2f}")
-    print(f"Total: ${final_total:.2f}")
+    def add_item(self, name: str, price: float, quantity: int) -> None:
+        """Add an item to the shopping cart."""
+        self.items.append(Item(name, price, quantity))
 
-def main():
+    def calculate_subtotal(self) -> float:
+        """Calculate the subtotal of the shopping cart."""
+        return sum(item.total_price for item in self.items)
+
+    def calculate_tax(self) -> float:
+        """Calculate the tax of the shopping cart."""
+        subtotal = self.calculate_subtotal()
+        return subtotal * self.tax_rate
+
+    def calculate_discount(self) -> float:
+        """Calculate the discount of the shopping cart."""
+        subtotal = self.calculate_subtotal()
+        if subtotal > self.discount_threshold:
+            return subtotal * self.discount_percentage
+        return 0
+
+    def calculate_total(self) -> float:
+        """Calculate the total of the shopping cart."""
+        subtotal = self.calculate_subtotal()
+        tax = self.calculate_tax()
+        discount = self.calculate_discount()
+        return subtotal + tax - discount
+
+def main() -> None:
+    """Main function."""
+
+    cart = ShoppingCart()
+
     while True:
-        print("\n1. Add Item\n2. View Items\n3. Print Receipt\n4. Exit")
-        c = input("Enter choice: ")
-        if c == "1":
-            additem()
-        elif c == "2":
-            printItems()
-        elif c == "3":
-            printReciept()
-        elif c == "4":
+        print("1. Add item")
+        print("2. View cart")
+        print("3. Checkout")
+        print("4. Quit")
+
+        choice = input("Choose an option: ")
+
+        if choice == "1":
+            name = input("Enter item name: ")
+            price = float(input("Enter item price: "))
+            quantity = int(input("Enter item quantity: "))
+            cart.add_item(name, price, quantity)
+        elif choice == "2":
+            print("Shopping Cart:")
+            for i, item in enumerate(cart.items, start=1):
+                print(f"{i}. {item.name} x {item.quantity} = ${item.total_price:.2f}")
+            print(f"Subtotal: ${cart.calculate_subtotal():.2f}")
+            print(f"Tax: ${cart.calculate_tax():.2f}")
+            print(f"Discount: ${cart.calculate_discount():.2f}")
+            print(f"Total: ${cart.calculate_total():.2f}")
+        elif choice == "3":
+            print("Checkout:")
+            print(f"Total: ${cart.calculate_total():.2f}")
+            print("Thank you for shopping!")
+            break
+        elif choice == "4":
             print("Goodbye!")
             break
         else:
-            print("Invalid choice!")
+            print("Invalid choice. Please choose again.")
 
-main()
+if __name__ == "__main__":
+    main()

@@ -1,65 +1,87 @@
-students = []
-grades = []
-IDs = []
+# WindSurf/code8.py
+
+class Student:
+    def __init__(self, name, grade, student_id):
+        self.name = name
+        self.grade = grade
+        self.student_id = student_id
+
+class StudentManagementSystem:
+    def __init__(self):
+        self.students = []
+        self.grades = []
+        self.student_ids = []
+
+    def add_student(self):
+        name = input("Enter student name: ")
+        grade = input("Enter student grade: ")
+        student_id = input("Enter student ID: ")
+        student = Student(name, grade, student_id)
+        self.students.append(student)
+        self.grades.append(grade)
+        self.student_ids.append(student_id)
+        print(f"Student '{name}' added successfully.")
+
+    def view_students(self):
+        if not self.students:
+            print("No students available.")
+            return
+        print("\n--- Student List ---")
+        for i, student in enumerate(self.students, start=1):
+            print(f"{i}. {student.name} - Grade: {student.grade} - ID: {student.student_id}")
+
+    def update_grade(self):
+        if not self.students:
+            print("No students to update.")
+            return
+        self.view_students()
+        try:
+            student_num = int(input("Enter student number to update grade: ")) - 1
+            if 0 <= student_num < len(self.students):
+                new_grade = input("Enter new grade: ")
+                self.students[student_num].grade = new_grade
+                self.grades[student_num] = new_grade
+                print(f"Grade updated for student '{self.students[student_num].name}'.")
+            else:
+                print("Invalid student number.")
+        except ValueError:
+            print("Please enter a valid number.")
+
+    def remove_student(self):
+        if not self.students:
+            print("No students to remove.")
+            return
+        self.view_students()
+        try:
+            student_num = int(input("Enter student number to remove: ")) - 1
+            if 0 <= student_num < len(self.students):
+                removed_student = self.students.pop(student_num)
+                self.grades.pop(student_num)
+                self.student_ids.pop(student_num)
+                print(f"Student '{removed_student.name}' removed successfully.")
+            else:
+                print("Invalid student number.")
+        except ValueError:
+            print("Please enter a valid number.")
 
 def start():
-    print("Welcome to the Student Management System!")
+    student_management_system = StudentManagementSystem()
     while True:
         print("\n1. Add Student\n2. View Students\n3. Update Grade\n4. Remove Student\n5. Quit")
         choice = input("Enter choice: ")
         if choice == "1":
-            add_student()
+            student_management_system.add_student()
         elif choice == "2":
-            view_students()
+            student_management_system.view_students()
         elif choice == "3":
-            update_grade()
+            student_management_system.update_grade()
         elif choice == "4":
-            remove_student()
+            student_management_system.remove_student()
         elif choice == "5":
             print("Exiting...")
             break
         else:
-            print("Invalid choice!")
+            print("Invalid choice, try again.")
 
-def add_student():
-    name = input("Enter student name: ")
-    ID = input("Enter student ID: ")
-    if ID in IDs:
-        print("Student ID already exists!")
-        return
-    grade = input("Enter student grade: ")
-    students.append(name)
-    IDs.append(ID)
-    grades.append(grade)
-    print(f"Student {name} (ID: {ID}) added with grade {grade}.")
-
-def view_students():
-    if len(students) == 0:
-        print("No students available.")
-        return
-    print("\n--- Student List ---")
-    for i in range(len(students)):
-        print(f"{students[i]} (ID: {IDs[i]}) - Grade: {grades[i]}")
-
-def update_grade():
-    ID = input("Enter student ID to update grade: ")
-    if ID not in IDs:
-        print("Student not found!")
-        return
-    index = IDs.index(ID)
-    new_grade = input("Enter new grade: ")
-    grades[index] = new_grade
-    print(f"Updated grade for {students[index]} (ID: {ID}) to {new_grade}.")
-
-def remove_student():
-    ID = input("Enter student ID to remove: ")
-    if ID not in IDs:
-        print("Student not found!")
-        return
-    index = IDs.index(ID)
-    removed_name = students.pop(index)
-    IDs.pop(index)
-    grades.pop(index)
-    print(f"Student {removed_name} (ID: {ID}) removed.")
-
-start()
+if __name__ == "__main__":
+    start()

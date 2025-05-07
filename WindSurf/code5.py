@@ -1,89 +1,100 @@
 import random
 
-player_name = ""
-player_hp = 100
-player_max_hp = 100
-enemy_hp = 100
-enemy_max_hp = 100
-potions = 3
-enemy_potions = 1
-player_attack_min = 10
-player_attack_max = 20
-enemy_attack_min = 5
-enemy_attack_max = 15
-turn = 0
+class Player:
+    def __init__(self, name, max_hp):
+        self.name = name
+        self.hp = max_hp
+        self.max_hp = max_hp
+        self.potions = 3
 
-def startGame():
-    global player_name
+    def is_alive(self):
+        return self.hp > 0
+
+    def use_potion(self):
+        if self.potions > 0:
+            heal = 20
+            if self.hp + heal > self.max_hp:
+                heal = self.max_hp - self.hp
+            self.hp += heal
+            self.potions -= 1
+            print(f"You used a potion! Restored {heal} HP. Your HP: {self.hp}/{self.max_hp}. Potions left: {self.potions}")
+        else:
+            print("You have no potions left!")
+
+    def attack(self, enemy):
+        damage = random.randint(10, 20)
+        enemy.hp -= damage
+        if enemy.hp < 0:
+            enemy.hp = 0
+        print(f"You attack the enemy for {damage} damage! Enemy HP: {enemy.hp}/{enemy.max_hp}")
+
+
+class Enemy:
+    def __init__(self, max_hp):
+        self.hp = max_hp
+        self.max_hp = max_hp
+        self.potions = 1
+
+    def is_alive(self):
+        return self.hp > 0
+
+    def use_potion(self):
+        if self.potions > 0 and self.hp < self.max_hp:
+            heal = 15
+            if self.hp + heal > self.max_hp:
+                heal = self.max_hp - self.hp
+            self.hp += heal
+            self.potions -= 1
+            print(f"Enemy used a potion! Enemy HP: {self.hp}/{self.max_hp}. Enemy potions left: {self.potions}")
+
+    def attack(self, player):
+        damage = random.randint(5, 15)
+        player.hp -= damage
+        if player.hp < 0:
+            player.hp = 0
+        print(f"Enemy attacks you for {damage} damage! Your HP: {player.hp}/{player.max_hp}")
+
+
+def start_game():
     print("Welcome to the Ultimate Battle Game!")
     player_name = input("Enter your name: ")
     print(f"Hello {player_name}, get ready to fight!")
+    return Player(player_name, 100)
 
-def attack():
-    global enemy_hp
-    damage = random.randint(player_attack_min, player_attack_max)
-    enemy_hp -= damage
-    if enemy_hp < 0:
-        enemy_hp = 0
-    print(f"You attack the enemy for {damage} damage! Enemy HP: {enemy_hp}/{enemy_max_hp}")
 
-def enemyAttack():
-    global player_hp
-    damage = random.randint(enemy_attack_min, enemy_attack_max)
-    player_hp -= damage
-    if player_hp < 0:
-        player_hp = 0
-    print(f"Enemy attacks you for {damage} damage! Your HP: {player_hp}/{player_max_hp}")
-
-def usePotion():
-    global player_hp, potions
-    if potions > 0:
-        heal = 20
-        if player_hp + heal > player_max_hp:
-            heal = player_max_hp - player_hp
-        player_hp += heal
-        potions -= 1
-        print(f"You used a potion! Restored {heal} HP. Your HP: {player_hp}/{player_max_hp}. Potions left: {potions}")
-    else:
-        print("You have no potions left!")
-
-def enemyUsePotion():
-    global enemy_hp, enemy_potions
-    if enemy_potions > 0 and enemy_hp < enemy_max_hp:
-        heal = 15
-        if enemy_hp + heal > enemy_max_hp:
-            heal = enemy_max_hp - enemy_hp
-        enemy_hp += heal
-        enemy_potions -= 1
-        print(f"Enemy used a potion! Enemy HP: {enemy_hp}/{enemy_max_hp}. Enemy potions left: {enemy_potions}")
-
-def battle():
-    global player_hp, enemy_hp
-    while player_hp > 0 and enemy_hp > 0:
+def battle(player, enemy):
+    while player.is_alive() and enemy.is_alive():
         print("\n1. Attack\n2. Use Potion\n3. Run")
         choice = input("Enter choice: ")
         if choice == "1":
-            attack()
-            if enemy_hp > 0:
-                if enemy_hp < 30 and enemy_potions > 0:
-                    enemyUsePotion()
+            player.attack(enemy)
+            if enemy.is_alive():
+                if enemy.hp < 30 and enemy.potions > 0:
+                    enemy.use_potion()
                 else:
-                    enemyAttack()
+                    enemy.attack(player)
         elif choice == "2":
-            usePotion()
-            enemyAttack()
+            player.use_potion()
+            enemy.attack(player)
         elif choice == "3":
             print("You ran away! Game over.")
             return
         else:
             print("Invalid choice.")
 
-        if player_hp <= 0:
+        if not player.is_alive():
             print("You died! Game over.")
             return
-        elif enemy_hp <= 0:
+        elif not enemy.is_alive():
             print("You defeated the enemy! You win!")
             return
 
-startGame()
-battle()
+
+def main():
+    player = start_game()
+    enemy = Enemy(100)
+    battle(player, enemy)
+
+
+if __name__ == "__main__":
+    main()

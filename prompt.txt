@@ -1,1 +1,1 @@
-Please refactor this Python code to improve readability, reduce cyclomatic complexity, and improve maintainability:
+Please refactor this full Python code to improve readability, reduce cyclomatic complexity, and improve maintainability:

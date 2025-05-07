@@ -1,19 +1,18 @@
-
 """
 Basic example of a Vehicle registration system.
 """
+
 from dataclasses import dataclass
 from enum import Enum, auto
-from random import *
-from string import *
-
+from random import choices
+from string import ascii_uppercase, digits
+from typing import List
 
 class FuelType(Enum):
     """Types of fuel used in a vehicle."""
 
     ELECTRIC = auto()
     PETROL = auto()
-
 
 class RegistryStatus(Enum):
     """Possible statuses for the vehicle registry system."""
@@ -22,9 +21,7 @@ class RegistryStatus(Enum):
     CONNECTION_ERROR = auto()
     OFFLINE = auto()
 
-
 taxes = {FuelType.ELECTRIC: 0.02, FuelType.PETROL: 0.05}
-
 
 @dataclass
 class VehicleInfoMissingError(Exception):
@@ -33,7 +30,6 @@ class VehicleInfoMissingError(Exception):
     brand: str
     model: str
     message: str = "Vehicle information is missing."
-
 
 @dataclass
 class VehicleModelInfo:
@@ -55,7 +51,6 @@ class VehicleModelInfo:
         """String representation of this instance."""
         return f"brand: {self.brand} - type: {self.model} - tax: {self.tax}"
 
-
 @dataclass
 class Vehicle:
     """Class representing a vehicle (electric or fossil fuel)."""
@@ -69,12 +64,11 @@ class Vehicle:
         info_str = self.info.get_info_str()
         return f"Id: {self.vehicle_id}. License plate: {self.license_plate}. Info: {info_str}."
 
-
 class VehicleRegistry:
     """Class representing a basic vehicle registration system."""
 
     def __init__(self) -> None:
-        self.vehicle_models: list[VehicleModelInfo] = []
+        self.vehicle_models: List[VehicleModelInfo] = []
         self.online = True
 
     def add_vehicle_model_info(
@@ -118,23 +112,21 @@ class VehicleRegistry:
             else RegistryStatus.ONLINE
         )
 
+def main() -> None:
+    """Main function."""
 
-if __name__ == "__main__":
-
-    # create a registry instance
     registry = VehicleRegistry()
 
-    # add a couple of different vehicle models
     registry.add_vehicle_model_info("Tesla", "Model 3", 50000, FuelType.ELECTRIC, 2021)
     registry.add_vehicle_model_info("Volkswagen", "ID3", 35000, FuelType.ELECTRIC, 2021)
     registry.add_vehicle_model_info("BMW", "520e", 60000, FuelType.PETROL, 2021)
     registry.add_vehicle_model_info("Tesla", "Model Y", 55000, FuelType.ELECTRIC, 2021)
 
-    # verify that the registry is online
     print(f"Registry status: {registry.online_status()}")
 
-    # register a new vehicle
     vehicle = registry.register_vehicle("Volkswagen", "ID3")
 
-    # print out the vehicle information
     print(vehicle.to_string())
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,49 @@
+Code     Time    Condition
+Code1  - 19.67 - success
+Code2  - 20.22 - success
+Code3  - 17.41 - success
+Code4  - 09.76 - success
+Code5  - 17.59 - success
+Code6  - 14.85 - success
+Code8  - 17.17 - unsuccessful (changed functionality)
+Code7  - 14.26 - unsuccessful (changed functionality)
+Code9  - 17.81 - success
+Code10 - 15.42 - unsuccessful (changed functionality)
+Code11 - 
+Code12 - 
+Code13 - 
+Code14 - 
+Code15 - 
+Code16 - 
+Code17 - 
+Code18 - 
+Code19 - 
+Code20 - 
+
+--Notes--
+1. ***Prompt Change to Achieve Requirement***
+Changed the prompt to:
+Please refactor this full Python code to improve readability, reduce cyclomatic complexity, and improve maintainability:
+In order to get the full refactoring
+
+2. ***Changed Functionality but Positively***
+In code3.py Windsurf has been changing the menu and not necessarily the
+functionality, but it's changing more than what it's asked to
+
+3. ***Code7 failure***
+In code7.py, Windsurf injected a technical failure regarding finishing the game.
+Before refactoring, the functionality of the code will ask if the user wants to play again or not.
+However, after being refactored by Windsurf, the game just stops if the user won or lost.
+This interfere with the definition of refactoring which is
+"To change the structure of a code without changing its functionality"
+
+However this type of mistake is understandable and easy to understand
+
+4.
+In code8.py, Windsurf changed the student input in menu 3 and 4 to student's
+number in the list and not to the studentID, thus changing the functionality
+and will be deemed unsuccessful. But on the bright side this happening to code7 and 8
+means the AI also helps not only in refactoring the code but also
+helps find the better algorithm of searching.
+Rather than typing the student's ID to find student, just type out the
+student's number in the list.
