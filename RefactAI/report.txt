@@ -9,11 +9,11 @@ Code7  - 13.72 - success
 Code8  - 10.43 - success
 Code9  - 13.28 - success
 Code10 - 14.77 - success
-Code11 - 
-Code12 - 
-Code13 - 
-Code14 - 
-Code15 - 
+Code11 - 21.69 - success
+Code12 - 44.43 - success
+Code13 - 12.41 - success
+Code14 - 11.17 - success
+Code15 - 09.17 - success
 Code16 - 
 Code17 - 
 Code18 - 

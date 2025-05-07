@@ -1,76 +1,113 @@
-items = []
-transactions = []
+from collections import namedtuple
 
-def add_item():
+Item = namedtuple('Item', ['name', 'price', 'stock'])
+Transaction = namedtuple('Transaction', ['item_name', 'quantity', 'total'])
+
+class Inventory:
+    def __init__(self):
+        self.items = []
+
+    def add_item(self, name, price, stock):
+        self.items.append(Item(name, price, stock))
+
+    def update_stock(self, index, quantity):
+        item = self.items[index]
+        self.items[index] = item._replace(stock=item.stock - quantity)
+
+    def get_item(self, index):
+        return self.items[index]
+
+    def list_items(self):
+        return self.items
+
+    def has_items(self):
+        return bool(self.items)
+
+class TransactionManager:
+    def __init__(self):
+        self.transactions = []
+
+    def add_transaction(self, item_name, quantity, total):
+        self.transactions.append(Transaction(item_name, quantity, total))
+
+    def list_transactions(self):
+        return self.transactions
+
+    def has_transactions(self):
+        return bool(self.transactions)
+
+def get_valid_input(prompt, validate_fn, error_msg):
+    while True:
+        value = input(prompt).strip()
+        if validate_fn(value):
+            return value
+        print(error_msg)
+
+def add_item_ui(inventory):
     print("\n=== Add Item ===")
-    name = input("Enter item name: ").strip()
-    price = input("Enter price: ").strip()
-    stock = input("Enter stock: ").strip()
-    
-    if not price.isdigit() or not stock.isdigit():
-        print("❌ Invalid input!")
-        return
-    
-    items.append([name, float(price), int(stock)])
+    name = get_valid_input("Enter item name: ", lambda x: bool(x), "Name cannot be empty!")
+    price = get_valid_input("Enter price: ", lambda x: x.replace('.', '', 1).isdigit(), "Price must be a number!")
+    stock = get_valid_input("Enter stock: ", lambda x: x.isdigit(), "Stock must be an integer!")
+    inventory.add_item(name, float(price), int(stock))
     print(f"✅ Added '{name}' to inventory.")
 
-def view_items():
-    if not items:
+def view_items_ui(inventory):
+    if not inventory.has_items():
         print("📭 No items available.")
         return
-    
     print("\n=== Inventory ===")
-    for i, item in enumerate(items):
-        print(f"{i+1}. {item[0]} - ${item[1]:.2f} - Stock: {item[2]}")
+    for i, item in enumerate(inventory.list_items(), 1):
+        print(f"{i}. {item.name} - ${item.price:.2f} - Stock: {item.stock}")
 
-def sell_item():
-    view_items()
-    
+def sell_item_ui(inventory, transaction_manager):
+    if not inventory.has_items():
+        print("📭 No items available.")
+        return
+    view_items_ui(inventory)
     try:
-        index = int(input("Enter item number: ")) - 1
-        qty = int(input("Enter quantity: "))
-
-        if index < 0 or index >= len(items):
+        index = int(get_valid_input("Enter item number: ", lambda x: x.isdigit(), "Invalid input!")) - 1
+        qty = int(get_valid_input("Enter quantity: ", lambda x: x.isdigit(), "Invalid input!"))
+        if index < 0 or index >= len(inventory.items):
             print("❌ Invalid item number!")
             return
-
-        if items[index][2] < qty:
+        item = inventory.get_item(index)
+        if item.stock < qty:
             print("❌ Not enough stock!")
             return
-
-        total = items[index][1] * qty
-        items[index][2] -= qty
-        transactions.append([items[index][0], qty, total])
-        print(f"🛒 Sold {qty} x {items[index][0]} for ${total:.2f}")
-
+        total = item.price * qty
+        inventory.update_stock(index, qty)
+        transaction_manager.add_transaction(item.name, qty, total)
+        print(f"🛒 Sold {qty} x {item.name} for ${total:.2f}")
     except ValueError:
         print("❌ Invalid input!")
 
-def view_transactions():
-    if not transactions:
+def view_transactions_ui(transaction_manager):
+    if not transaction_manager.has_transactions():
         print("📭 No transactions yet.")
         return
-    
     print("\n=== Transactions ===")
-    for t in transactions:
-        print(f"{t[1]} x {t[0]} - ${t[2]:.2f}")
+    for t in transaction_manager.list_transactions():
+        print(f"{t.quantity} x {t.item_name} - ${t.total:.2f}")
 
 def cashier_menu():
+    inventory = Inventory()
+    transaction_manager = TransactionManager()
+    menu_options = {
+        "1": ("Add Item", lambda: add_item_ui(inventory)),
+        "2": ("View Items", lambda: view_items_ui(inventory)),
+        "3": ("Sell Item", lambda: sell_item_ui(inventory, transaction_manager)),
+        "4": ("View Transactions", lambda: view_transactions_ui(transaction_manager)),
+        "5": ("Exit", None)
+    }
     while True:
-        print("\n1. Add Item\n2. View Items\n3. Sell Item\n4. View Transactions\n5. Exit")
+        print("\n" + "\n".join([f"{k}. {v[0]}" for k, v in menu_options.items()]))
         choice = input("Choose an option: ").strip()
-
-        if choice == "1":
-            add_item()
-        elif choice == "2":
-            view_items()
-        elif choice == "3":
-            sell_item()
-        elif choice == "4":
-            view_transactions()
-        elif choice == "5":
+        if choice == "5":
             print("👋 Exiting...")
             break
+        action = menu_options.get(choice)
+        if action:
+            action[1]()
         else:
             print("❌ Invalid choice!")
 

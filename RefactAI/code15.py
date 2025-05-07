@@ -1,72 +1,111 @@
-products = []
+class Product:
+    TAX_MAP = {
+        "Electronics": 18,
+        "Clothing": 5,
+        "Food": 12
+    }
+    DEFAULT_TAX = 8
 
-def add_product():
-    print("Add Product")
-    name = input("Enter product name: ")
-    category = input("Enter category: ")
-    price = input("Enter price: ")
-    stock = input("Enter stock quantity: ")
+    def __init__(self, name, category, price, stock):
+        self.name = name
+        self.category = category
+        self.price = price
+        self.stock = stock
+        self.tax = self.calculate_tax(category)
 
-    if category == "Electronics":
-        tax = 18
-    elif category == "Clothing":
-        tax = 5
-    elif category == "Food":
-        tax = 12
-    else:
-        tax = 8
+    @classmethod
+    def calculate_tax(cls, category):
+        return cls.TAX_MAP.get(category, cls.DEFAULT_TAX)
 
-    products.append({"name": name, "category": category, "price": price, "stock": stock, "tax": tax})
-    print("Product Added!")
+    def update(self, category, price, stock):
+        self.category = category
+        self.price = price
+        self.stock = stock
+        self.tax = self.calculate_tax(category)
 
-def display_products():
-    print("\n--- Product List ---")
-    for p in products:
-        print(f"Name: {p['name']}, Category: {p['category']}, Price: {p['price']}, Stock: {p['stock']}, Tax: {p['tax']}%")
+    def __str__(self):
+        return (f"Name: {self.name}, Category: {self.category}, Price: {self.price}, "
+                f"Stock: {self.stock}, Tax: {self.tax}%")
 
-def update_product():
-    prod_name = input("Enter product name to update: ")
-    for p in products:
-        if p['name'] == prod_name:
-            p['category'] = input("Enter new category: ")
-            p['price'] = input("Enter new price: ")
-            p['stock'] = input("Enter new stock quantity: ")
+class ProductManager:
+    def __init__(self):
+        self.products = []
 
-            if p['category'] == "Electronics":
-                p['tax'] = 18
-            elif p['category'] == "Clothing":
-                p['tax'] = 5
-            elif p['category'] == "Food":
-                p['tax'] = 12
-            else:
-                p['tax'] = 8
+    def add_product(self, name, category, price, stock):
+        self.products.append(Product(name, category, price, stock))
+        print("Product Added!")
 
+    def display_products(self):
+        print("\n--- Product List ---")
+        if not self.products:
+            print("No products found.")
+        for p in self.products:
+            print(p)
+
+    def find_product(self, name):
+        for p in self.products:
+            if p.name == name:
+                return p
+        return None
+
+    def update_product(self, name):
+        p = self.find_product(name)
+        if p:
+            category = input("Enter new category: ")
+            price = input("Enter new price: ")
+            stock = input("Enter new stock quantity: ")
+            p.update(category, price, stock)
             print("Product Updated!")
-            return
-    print("Product not found!")
+        else:
+            print("Product not found!")
 
-def delete_product():
-    prod_name = input("Enter product name to delete: ")
-    global products
-    products = [p for p in products if p['name'] != prod_name]
-    print("Product Deleted!")
+    def delete_product(self, name):
+        before_count = len(self.products)
+        self.products = [p for p in self.products if p.name != name]
+        if len(self.products) < before_count:
+            print("Product Deleted!")
+        else:
+            print("Product not found!")
+
+def get_input(prompt, validate_fn=lambda x: True, error_msg="Invalid input!"):
+    while True:
+        value = input(prompt)
+        if validate_fn(value):
+            return value
+        print(error_msg)
 
 def main():
+    manager = ProductManager()
+    menu_options = {
+        "1": "Add Product",
+        "2": "Display Products",
+        "3": "Update Product",
+        "4": "Delete Product",
+        "5": "Exit"
+    }
     while True:
-        print("\n1. Add Product\n2. Display Products\n3. Update Product\n4. Delete Product\n5. Exit")
+        print("\n" + "\n".join([f"{k}. {v}" for k, v in menu_options.items()]))
         choice = input("Enter choice: ")
         if choice == "1":
-            add_product()
+            print("Add Product")
+            name = get_input("Enter product name: ", lambda x: bool(x.strip()), "Name cannot be empty!")
+            category = get_input("Enter category: ", lambda x: bool(x.strip()), "Category cannot be empty!")
+            price = get_input("Enter price: ", lambda x: x.replace('.', '', 1).isdigit(), "Price must be a number!")
+            stock = get_input("Enter stock quantity: ", lambda x: x.isdigit(), "Stock must be a number!")
+            manager.add_product(name, category, price, stock)
         elif choice == "2":
-            display_products()
+            manager.display_products()
         elif choice == "3":
-            update_product()
+            name = get_input("Enter product name to update: ", lambda x: bool(x.strip()), "Name cannot be empty!")
+            manager.update_product(name)
         elif choice == "4":
-            delete_product()
+            name = get_input("Enter product name to delete: ", lambda x: bool(x.strip()), "Name cannot be empty!")
+            manager.delete_product(name)
         elif choice == "5":
             print("Exiting...")
             break
         else:
             print("Invalid choice, try again.")
 
-main()
+if __name__ == "__main__":
+    main()
