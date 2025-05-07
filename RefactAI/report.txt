@@ -14,11 +14,11 @@ Code12 - 44.43 - success
 Code13 - 12.41 - success
 Code14 - 11.17 - success
 Code15 - 09.17 - success
-Code16 - 
-Code17 - 
-Code18 - 
-Code19 - 
-Code20 - 
+Code16 - 09.58 - success
+Code17 - 12.32 - success
+Code18 - 08.95 - success
+Code19 - 11.11 - success
+Code20 - 11.58 - success
 
 --Notes--
-Code9 : RefactAI even updated and improved the functionality of the code
+RefactAI even updated and improved the functionality of the code

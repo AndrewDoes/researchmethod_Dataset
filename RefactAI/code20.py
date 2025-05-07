@@ -1,58 +1,71 @@
 import random
+from typing import List
 
 class MenuItem:
-    def __init__(self, n, p, d=""):
-        self.name = n
-        self.price = p
-        self.description = d
+    """Represents a menu item in the cafe."""
+    def __init__(self, name: str, price: float, description: str = ""):
+        self.name = name
+        self.price = price
+        self.description = description
 
-    def get_info(self):
+    def get_info(self) -> str:
         return f"{self.name} - ${self.price:.2f}: {self.description}"
 
 class Order:
+    """Represents a customer's order."""
+    DISCOUNT_THRESHOLD = 3
+    DISCOUNT_AMOUNT = 2.0
+
     def __init__(self):
-        self.items = []
-        self.total = 0.0
-        self.order_id = random.randint(1000, 9999)
-        self.payment_method = ""
-        self.is_paid = False
+        self.items: List[MenuItem] = []
+        self.order_id: int = random.randint(1000, 9999)
+        self.payment_method: str = ""
+        self.is_paid: bool = False
+        self._discount_applied: bool = False
 
-    def add_item(self, item):
+    @property
+    def total(self) -> float:
+        total = sum(item.price for item in self.items)
+        if self._discount_applied:
+            total -= self.DISCOUNT_AMOUNT
+        return max(total, 0.0)
+
+    def add_item(self, item: MenuItem):
         self.items.append(item)
-        self.total += item.price
 
-    def remove_item(self, item):
+    def remove_item(self, item: MenuItem):
         if item in self.items:
             self.items.remove(item)
-            self.total -= item.price
 
     def print_order(self):
         print(f"Order ID: {self.order_id}")
         for item in self.items:
             print(item.get_info())
         print(f"Total: ${self.total:.2f}")
-        if self.is_paid:
-            print("Paid")
-        else:
-            print("Not Paid")
+        print("Paid" if self.is_paid else "Not Paid")
+        if self._discount_applied:
+            print("Discount applied.")
 
-    def pay(self, method):
+    def pay(self, method: str):
         self.payment_method = method
         self.is_paid = True
         print(f"Payment successful with {method}.")
 
     def apply_discount(self):
-        if len(self.items) > 3:
-            self.total -= 2
+        if len(self.items) > self.DISCOUNT_THRESHOLD:
+            self._discount_applied = True
             print("Discount applied.")
+        else:
+            print("No discount applied (not enough items).")
 
 class Cafe:
-    def __init__(self, name):
+    """Represents the cafe, its menu, and orders."""
+    def __init__(self, name: str):
         self.name = name
-        self.menu = []
-        self.orders = []
+        self.menu: List[MenuItem] = []
+        self.orders: List[Order] = []
 
-    def add_menu_item(self, item):
+    def add_menu_item(self, item: MenuItem):
         self.menu.append(item)
 
     def show_menu(self):
@@ -60,7 +73,7 @@ class Cafe:
         for item in self.menu:
             print(item.get_info())
 
-    def take_order(self, order):
+    def take_order(self, order: Order):
         self.orders.append(order)
         print(f"Order {order.order_id} has been placed.")
 
@@ -68,15 +81,11 @@ class Cafe:
         for order in self.orders:
             order.print_order()
 
-    def total_sales(self):
-        total = 0.0
-        for order in self.orders:
-            total += order.total
-        return total
+    def total_sales(self) -> float:
+        return sum(order.total for order in self.orders)
 
     def generate_report(self):
-        total_sales = self.total_sales()
-        print(f"Total sales: ${total_sales:.2f}")
+        print(f"Total sales: ${self.total_sales():.2f}")
         print(f"Number of orders: {len(self.orders)}")
 
 def main():
@@ -89,10 +98,8 @@ def main():
     cake = MenuItem("Cake", 3.0, "Chocolate cake")
 
     # Add menu items
-    cafe.add_menu_item(coffee)
-    cafe.add_menu_item(tea)
-    cafe.add_menu_item(sandwich)
-    cafe.add_menu_item(cake)
+    for item in [coffee, tea, sandwich, cake]:
+        cafe.add_menu_item(item)
 
     # Show menu
     cafe.show_menu()
@@ -115,7 +122,12 @@ def main():
     order1.print_order()
     order2.print_order()
 
-    # Apply discount to order 1
+    # Apply discount to order 1 (will not apply, only 2 items)
+    order1.apply_discount()
+
+    # Add more items to order 1 and apply discount again
+    order1.add_item(tea)
+    order1.add_item(cake)
     order1.apply_discount()
 
     # Process payments

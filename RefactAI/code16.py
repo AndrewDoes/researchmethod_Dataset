@@ -1,68 +1,108 @@
-users = []
+class User:
+    def __init__(self, name, email, password, age):
+        self.name = name
+        self.email = email
+        self.password = password
+        self.age = age
+        self.role = self.calculate_role(age)
 
-def register_user():
-    print("Register User")
-    name = input("Enter name: ")
-    email = input("Enter email: ")
-    password = input("Enter password: ")
-    age = int(input("Enter age: "))
+    @staticmethod
+    def calculate_role(age):
+        if age < 18:
+            return "Minor"
+        elif 18 <= age <= 60:
+            return "Adult"
+        else:
+            return "Senior"
 
-    if age < 18:
-        role = "Minor"
-    elif age >= 18 and age <= 60:
-        role = "Adult"
-    else:
-        role = "Senior"
+    def update(self, name, password, age):
+        self.name = name
+        self.password = password
+        self.age = age
+        self.role = self.calculate_role(age)
 
-    users.append({"name": name, "email": email, "password": password, "age": age, "role": role})
-    print("User Registered!")
+    def __str__(self):
+        return f"Name: {self.name}, Email: {self.email}, Age: {self.age}, Role: {self.role}"
 
-def display_users():
-    print("\n--- User List ---")
-    for u in users:
-        print(f"Name: {u['name']}, Email: {u['email']}, Age: {u['age']}, Role: {u['role']}")
+class UserManager:
+    def __init__(self):
+        self.users = []
 
-def update_user():
-    email = input("Enter email to update: ")
-    for u in users:
-        if u['email'] == email:
-            u['name'] = input("Enter new name: ")
-            u['password'] = input("Enter new password: ")
-            u['age'] = int(input("Enter new age: "))
+    def register_user(self, name, email, password, age):
+        self.users.append(User(name, email, password, age))
+        print("User Registered!")
 
-            if u['age'] < 18:
-                u['role'] = "Minor"
-            elif u['age'] >= 18 and u['age'] <= 60:
-                u['role'] = "Adult"
-            else:
-                u['role'] = "Senior"
+    def display_users(self):
+        print("\n--- User List ---")
+        if not self.users:
+            print("No users found.")
+        for user in self.users:
+            print(user)
 
+    def find_user(self, email):
+        for user in self.users:
+            if user.email == email:
+                return user
+        return None
+
+    def update_user(self, email):
+        user = self.find_user(email)
+        if user:
+            name = get_input("Enter new name: ", lambda x: bool(x.strip()), "Name cannot be empty!")
+            password = get_input("Enter new password: ", lambda x: bool(x.strip()), "Password cannot be empty!")
+            age = int(get_input("Enter new age: ", lambda x: x.isdigit(), "Age must be a number!"))
+            user.update(name, password, age)
             print("User Updated!")
-            return
-    print("User not found!")
+        else:
+            print("User not found!")
 
-def delete_user():
-    email = input("Enter email to delete: ")
-    global users
-    users = [u for u in users if u['email'] != email]
-    print("User Deleted!")
+    def delete_user(self, email):
+        before_count = len(self.users)
+        self.users = [user for user in self.users if user.email != email]
+        if len(self.users) < before_count:
+            print("User Deleted!")
+        else:
+            print("User not found!")
+
+def get_input(prompt, validate_fn=lambda x: True, error_msg="Invalid input!"):
+    while True:
+        value = input(prompt)
+        if validate_fn(value):
+            return value
+        print(error_msg)
 
 def main():
+    manager = UserManager()
+    menu_options = {
+        "1": "Register User",
+        "2": "Display Users",
+        "3": "Update User",
+        "4": "Delete User",
+        "5": "Exit"
+    }
     while True:
-        print("\n1. Register User\n2. Display Users\n3. Update User\n4. Delete User\n5. Exit")
+        print("\n" + "\n".join([f"{k}. {v}" for k, v in menu_options.items()]))
         choice = input("Enter choice: ")
         if choice == "1":
-            register_user()
+            print("Register User")
+            name = get_input("Enter name: ", lambda x: bool(x.strip()), "Name cannot be empty!")
+            email = get_input("Enter email: ", lambda x: bool(x.strip()), "Email cannot be empty!")
+            password = get_input("Enter password: ", lambda x: bool(x.strip()), "Password cannot be empty!")
+            age = int(get_input("Enter age: ", lambda x: x.isdigit(), "Age must be a number!"))
+            manager.register_user(name, email, password, age)
         elif choice == "2":
-            display_users()
+            manager.display_users()
         elif choice == "3":
-            update_user()
+            email = get_input("Enter email to update: ", lambda x: bool(x.strip()), "Email cannot be empty!")
+            manager.update_user(email)
         elif choice == "4":
-            delete_user()
+            email = get_input("Enter email to delete: ", lambda x: bool(x.strip()), "Email cannot be empty!")
+            manager.delete_user(email)
         elif choice == "5":
             print("Exiting...")
             break
         else:
             print("Invalid choice, try again.")
 
-main()
+if __name__ == "__main__":
+    main()
