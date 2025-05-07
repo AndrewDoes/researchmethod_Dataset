@@ -1,67 +1,101 @@
-users = []
-products = []
-tax = 0.08
+from typing import List, Optional, Tuple
 
-def register():
-    global users
-    name = input("Enter your name: ")
-    age = input("Enter your age: ")
-    email = input("Enter your email: ")
-    users.append((name, age, email))
-    print("User registered!")
+class User:
+    def __init__(self, name: str, age: str, email: str):
+        self.name = namel
+        self.age = age
+        self.email = email
 
-def addProduct():
-    global products
-    name = input("Enter product name: ")
-    price = input("Enter price: ")
-    stock = input("Enter stock quantity: ")
-    products.append((name, float(price), int(stock)))
+    def __str__(self):
+        return f"{self.name} ({self.age}) - {self.email}"
 
-def displayProducts():
-    global products
-    print("\n--- Product List ---")
-    for i in range(len(products)):
-        print(f"{products[i][0]} - ${products[i][1]:.2f} ({products[i][2]} left)")
+class Product:
+    def __init__(self, name: str, price: float, stock: int):
+        self.name = name
+        self.price = price
+        self.stock = stock
 
-def findProduct(name):
-    global products
-    for i in range(len(products)):
-        if products[i][0] == name:
-            return i
-    return -1
+    def __str__(self):
+        return f"{self.name} - ${self.price:.2f} ({self.stock} left)"
 
-def purchase():
-    global products
-    name = input("Enter product name: ")
-    index = findProduct(name)
-    if index == -1:
-        print("Product not found!")
-        return
-    qty = int(input("Enter quantity: "))
-    if products[index][2] < qty:
-        print("Not enough stock!")
-        return
-    products[index] = (products[index][0], products[index][1], products[index][2] - qty)
-    total = products[index][1] * qty
-    print(f"Total: ${total:.2f}")
-    print(f"Total with tax: ${total + (total * tax):.2f}")
+class Store:
+    TAX_RATE = 0.08
 
-def menu():
-    while True:
-        print("\n1. Register\n2. Add Product\n3. View Products\n4. Purchase\n5. Exit")
-        choice = input("Enter choice: ")
-        if choice == "1":
-            register()
-        elif choice == "2":
-            addProduct()
-        elif choice == "3":
-            displayProducts()
-        elif choice == "4":
-            purchase()
-        elif choice == "5":
-            print("Goodbye!")
-            break
-        else:
-            print("Invalid choice!")
+    def __init__(self):
+        self.users: List[User] = []
+        self.products: List[Product] = []
 
-menu()
+    def register_user(self) -> None:
+        """Register a new user."""
+        name = input("Enter your name: ")
+        age = input("Enter your age: ")
+        email = input("Enter your email: ")
+        self.users.append(User(name, age, email))
+        print("User registered!")
+
+    def add_product(self) -> None:
+        """Add a new product to the store."""
+        name = input("Enter product name: ")
+        try:
+            price = float(input("Enter price: "))
+            stock = int(input("Enter stock quantity: "))
+            self.products.append(Product(name, price, stock))
+        except ValueError:
+            print("Invalid price or stock quantity.")
+
+    def display_products(self) -> None:
+        """Display all products in the store."""
+        print("\n--- Product List ---")
+        for product in self.products:
+            print(product)
+
+    def find_product(self, name: str) -> Optional[Product]:
+        """Find a product by name."""
+        for product in self.products:
+            if product.name == name:
+                return product
+        return None
+
+    def purchase(self) -> None:
+        """Purchase a product."""
+        name = input("Enter product name: ")
+        product = self.find_product(name)
+        if not product:
+            print("Product not found!")
+            return
+        try:
+            qty = int(input("Enter quantity: "))
+        except ValueError:
+            print("Invalid quantity.")
+            return
+        if product.stock < qty:
+            print("Not enough stock!")
+            return
+        product.stock -= qty
+        total = product.price * qty
+        total_with_tax = total * (1 + self.TAX_RATE)
+        print(f"Total: ${total:.2f}")
+        print(f"Total with tax: ${total_with_tax:.2f}")
+
+    def menu(self) -> None:
+        """Main menu loop."""
+        while True:
+            print("\n1. Register\n2. Add Product\n3. View Products\n4. Purchase\n5. Exit")
+            choice = input("Enter choice: ")
+            if choice == "1":
+                self.register_user()
+            elif choice == "2":
+                self.add_product()
+            elif choice == "3":
+                self.display_products()
+            elif choice == "4":
+                self.purchase()
+            elif choice == "5":
+                print("Goodbye!")
+                break
+            else:
+                print("Invalid choice!")
+
+if __name__ == "__main__":
+    store = Store()
+    store.menu()
