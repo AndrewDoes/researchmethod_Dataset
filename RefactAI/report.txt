@@ -1,0 +1,24 @@
+Code     Time    Condition
+Code1  - 46.86 - success
+Code2  - 33.51 - success
+Code3  - 13.45 - success
+Code4  - 14.64 - success
+Code5  - 18.09 - success
+Code6  - 14.67 - success
+Code7  - 13.72 - success
+Code8  - 10.43 - success
+Code9  - 13.28 - success
+Code10 - 14.77 - success
+Code11 - 
+Code12 - 
+Code13 - 
+Code14 - 
+Code15 - 
+Code16 - 
+Code17 - 
+Code18 - 
+Code19 - 
+Code20 - 
+
+--Notes--
+Code9 : RefactAI even updated and improved the functionality of the code

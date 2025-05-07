@@ -1,23 +1,21 @@
-
 """
 Basic example of a Vehicle registration system.
 """
 from dataclasses import dataclass
 from enum import Enum, auto
-from random import *
-from string import *
+from random import choices
+from string import ascii_uppercase, digits
+from typing import List
 
 
 class FuelType(Enum):
     """Types of fuel used in a vehicle."""
-
     ELECTRIC = auto()
     PETROL = auto()
 
 
 class RegistryStatus(Enum):
     """Possible statuses for the vehicle registry system."""
-
     ONLINE = auto()
     CONNECTION_ERROR = auto()
     OFFLINE = auto()
@@ -26,19 +24,18 @@ class RegistryStatus(Enum):
 taxes = {FuelType.ELECTRIC: 0.02, FuelType.PETROL: 0.05}
 
 
-@dataclass
 class VehicleInfoMissingError(Exception):
-    """Custom error that is raised when vehicle information is missing for a particular brand."""
-
-    brand: str
-    model: str
-    message: str = "Vehicle information is missing."
+    """Custom error that is raised when vehicle information is missing for a particular brand/model."""
+    def __init__(self, brand: str, model: str, message: str = "Vehicle information is missing."):
+        self.brand = brand
+        self.model = model
+        self.message = message
+        super().__init__(f"{message} Brand: {brand}, Model: {model}")
 
 
 @dataclass
 class VehicleModelInfo:
     """Class that contains basic information about a vehicle model."""
-
     brand: str
     model: str
     catalogue_price: int
@@ -51,30 +48,34 @@ class VehicleModelInfo:
         tax_percentage = taxes[self.fuel_type]
         return tax_percentage * self.catalogue_price
 
+    def __str__(self) -> str:
+        return f"brand: {self.brand} - type: {self.model} - tax: {self.tax:.2f}"
+
     def get_info_str(self) -> str:
         """String representation of this instance."""
-        return f"brand: {self.brand} - type: {self.model} - tax: {self.tax}"
+        return str(self)
 
 
 @dataclass
 class Vehicle:
     """Class representing a vehicle (electric or fossil fuel)."""
-
     vehicle_id: str
     license_plate: str
     info: VehicleModelInfo
 
+    def __str__(self) -> str:
+        return f"Id: {self.vehicle_id}. License plate: {self.license_plate}. Info: {self.info}"
+
     def to_string(self) -> str:
         """String representation of this instance."""
-        info_str = self.info.get_info_str()
-        return f"Id: {self.vehicle_id}. License plate: {self.license_plate}. Info: {info_str}."
+        return str(self)
 
 
 class VehicleRegistry:
     """Class representing a basic vehicle registration system."""
 
     def __init__(self) -> None:
-        self.vehicle_models: list[VehicleModelInfo] = []
+        self.vehicle_models: List[VehicleModelInfo] = []
         self.online = True
 
     def add_vehicle_model_info(
@@ -100,23 +101,22 @@ class VehicleRegistry:
 
     def register_vehicle(self, brand: str, model: str) -> Vehicle:
         """Create a new vehicle and generate an id and a license plate."""
-        for vehicle_info in self.vehicle_models:
-            if vehicle_info.brand == brand:
-                if vehicle_info.model == model:
-                    vehicle_id = self.generate_vehicle_id(12)
-                    license_plate = self.generate_vehicle_license(vehicle_id)
-                    return Vehicle(vehicle_id, license_plate, vehicle_info)
-        raise VehicleInfoMissingError(brand, model)
+        vehicle_info = next(
+            (v for v in self.vehicle_models if v.brand == brand and v.model == model), None
+        )
+        if vehicle_info is None:
+            raise VehicleInfoMissingError(brand, model)
+        vehicle_id = self.generate_vehicle_id(12)
+        license_plate = self.generate_vehicle_license(vehicle_id)
+        return Vehicle(vehicle_id, license_plate, vehicle_info)
 
     def online_status(self) -> RegistryStatus:
         """Report whether the registry system is online."""
-        return (
-            RegistryStatus.OFFLINE
-            if not self.online
-            else RegistryStatus.CONNECTION_ERROR
-            if len(self.vehicle_models) == 0
-            else RegistryStatus.ONLINE
-        )
+        if not self.online:
+            return RegistryStatus.OFFLINE
+        if not self.vehicle_models:
+            return RegistryStatus.CONNECTION_ERROR
+        return RegistryStatus.ONLINE
 
 
 if __name__ == "__main__":
@@ -137,4 +137,4 @@ if __name__ == "__main__":
     vehicle = registry.register_vehicle("Volkswagen", "ID3")
 
     # print out the vehicle information
-    print(vehicle.to_string())
+    print(vehicle)

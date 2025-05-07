@@ -1,76 +1,85 @@
-tasks = []
-task_status = []
-priority = []
+from typing import List
 
-def start_app():
-    print("Welcome to the Messy To-Do List!")
-    while True:
-        print("\n1. Add Task\n2. View Tasks\n3. Mark Task as Done\n4. Remove Task\n5. Quit")
-        choice = input("Enter choice: ")
-        if choice == "1":
-            add_task()
-        elif choice == "2":
-            view_tasks()
-        elif choice == "3":
-            mark_done()
-        elif choice == "4":
-            remove_task()
-        elif choice == "5":
-            print("Exiting...")
-            break
-        else:
-            print("Invalid choice, try again.")
+class Task:
+    def __init__(self, description: str, priority: str):
+        self.description = description
+        self.priority = priority if priority in ["High", "Medium", "Low"] else "Low"
+        self.done = False
 
-def add_task():
-    task = input("Enter task description: ")
-    prio = input("Enter priority (High, Medium, Low): ")
-    if prio not in ["High", "Medium", "Low"]:
-        print("Invalid priority, defaulting to Low.")
-        prio = "Low"
-    tasks.append(task)
-    task_status.append(False)
-    priority.append(prio)
-    print(f"Task '{task}' added with priority {prio}.")
+    def __str__(self):
+        status = "Done" if self.done else "Not Done"
+        return f"{self.description} - {status} - Priority: {self.priority}"
 
-def view_tasks():
-    if len(tasks) == 0:
-        print("No tasks available.")
-        return
-    print("\n--- To-Do List ---")
-    for i in range(len(tasks)):
-        status = "Done" if task_status[i] else "Not Done"
-        print(f"{i+1}. {tasks[i]} - {status} - Priority: {priority[i]}")
+class ToDoList:
+    def __init__(self):
+        self.tasks: List[Task] = []
 
-def mark_done():
-    if len(tasks) == 0:
-        print("No tasks to mark.")
-        return
-    view_tasks()
-    try:
-        task_num = int(input("Enter task number to mark as done: ")) - 1
-        if 0 <= task_num < len(tasks):
-            task_status[task_num] = True
-            print(f"Task '{tasks[task_num]}' marked as done.")
-        else:
-            print("Invalid task number.")
-    except ValueError:
-        print("Please enter a valid number.")
+    def add_task(self):
+        description = input("Enter task description: ")
+        prio = input("Enter priority (High, Medium, Low): ")
+        if prio not in ["High", "Medium", "Low"]:
+            print("Invalid priority, defaulting to Low.")
+            prio = "Low"
+        self.tasks.append(Task(description, prio))
+        print(f"Task '{description}' added with priority {prio}.")
 
-def remove_task():
-    if len(tasks) == 0:
-        print("No tasks to remove.")
-        return
-    view_tasks()
-    try:
-        task_num = int(input("Enter task number to remove: ")) - 1
-        if 0 <= task_num < len(tasks):
-            removed_task = tasks.pop(task_num)
-            task_status.pop(task_num)
-            priority.pop(task_num)
-            print(f"Task '{removed_task}' removed.")
-        else:
-            print("Invalid task number.")
-    except ValueError:
-        print("Please enter a valid number.")
+    def view_tasks(self):
+        if not self.tasks:
+            print("No tasks available.")
+            return
+        print("\n--- To-Do List ---")
+        for idx, task in enumerate(self.tasks, 1):
+            print(f"{idx}. {task}")
 
-start_app()
+    def mark_done(self):
+        if not self.tasks:
+            print("No tasks to mark.")
+            return
+        self.view_tasks()
+        try:
+            task_num = int(input("Enter task number to mark as done: ")) - 1
+            if 0 <= task_num < len(self.tasks):
+                self.tasks[task_num].done = True
+                print(f"Task '{self.tasks[task_num].description}' marked as done.")
+            else:
+                print("Invalid task number.")
+        except ValueError:
+            print("Please enter a valid number.")
+
+    def remove_task(self):
+        if not self.tasks:
+            print("No tasks to remove.")
+            return
+        self.view_tasks()
+        try:
+            task_num = int(input("Enter task number to remove: ")) - 1
+            if 0 <= task_num < len(self.tasks):
+                removed_task = self.tasks.pop(task_num)
+                print(f"Task '{removed_task.description}' removed.")
+            else:
+                print("Invalid task number.")
+        except ValueError:
+            print("Please enter a valid number.")
+
+    def start_app(self):
+        print("Welcome to the Clean To-Do List!")
+        while True:
+            print("\n1. Add Task\n2. View Tasks\n3. Mark Task as Done\n4. Remove Task\n5. Quit")
+            choice = input("Enter choice: ")
+            if choice == "1":
+                self.add_task()
+            elif choice == "2":
+                self.view_tasks()
+            elif choice == "3":
+                self.mark_done()
+            elif choice == "4":
+                self.remove_task()
+            elif choice == "5":
+                print("Exiting...")
+                break
+            else:
+                print("Invalid choice, try again.")
+
+if __name__ == "__main__":
+    todo = ToDoList()
+    todo.start_app()
