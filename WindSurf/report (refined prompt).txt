@@ -1,0 +1,28 @@
+Code     Time    Condition
+Code1  - 
+Code2  - 
+Code3  - 
+Code4  - 
+Code5  - 
+Code6  - 
+Code8  - 
+Code7  - 
+Code9  - 
+Code10 - 
+Code11 - 
+Code12 - 
+Code13 - 
+Code14 - 
+Code15 - 
+Code16 - 
+Code17 - 
+Code18 - 
+Code19 - 
+Code20 - 
+
+--Notes--
+IMPORTANT :
+This is the report where the prompt is refined to:
+"Please refactor this full Python code to improve readability, reduce cyclomatic complexity, and improve maintainability:
+DO NOT CHANGE THE MENU"
+This is done to prevent Windsurf from changing the menu when not asked to

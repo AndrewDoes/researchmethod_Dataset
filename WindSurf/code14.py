@@ -1,72 +1,52 @@
-employees = []
+# WindSurf/code14.py
 
-def add_employee():
-    print("Add Employee")
-    name = input("Enter name: ")
-    age = input("Enter age: ")
-    position = input("Enter position: ")
-    salary = input("Enter salary: ")
+class Employee:
+    def __init__(self, name, age, position, salary):
+        self.name = name
+        self.age = age
+        self.position = position
+        self.salary = salary
 
-    if position == "Manager":
-        bonus = 5000
-    elif position == "Developer":
-        bonus = 3000
-    elif position == "Intern":
-        bonus = 1000
-    else:
-        bonus = 2000
+    def __str__(self):
+        return f"{self.name}, {self.age} years old, {self.position}, ${self.salary:.2f}"
 
-    employees.append({"name": name, "age": age, "position": position, "salary": salary, "bonus": bonus})
-    print("Employee Added!")
+class Company:
+    def __init__(self):
+        self.employees = []
 
-def display_employees():
-    print("\n--- Employee List ---")
-    for emp in employees:
-        print(f"Name: {emp['name']}, Age: {emp['age']}, Position: {emp['position']}, Salary: {emp['salary']}, Bonus: {emp['bonus']}")
+    def add_employee(self):
+        """Add employee to company"""
+        name = input("Enter employee name: ").strip()
+        age = int(input("Enter employee age: ").strip())
+        position = input("Enter employee position: ").strip()
+        salary = float(input("Enter employee salary: ").strip())
+        self.employees.append(Employee(name, age, position, salary))
+        print(f"Added '{name}' to company.")
 
-def update_employee():
-    emp_name = input("Enter employee name to update: ")
-    for emp in employees:
-        if emp['name'] == emp_name:
-            emp['age'] = input("Enter new age: ")
-            emp['position'] = input("Enter new position: ")
-            emp['salary'] = input("Enter new salary: ")
-
-            if emp['position'] == "Manager":
-                emp['bonus'] = 5000
-            elif emp['position'] == "Developer":
-                emp['bonus'] = 3000
-            elif emp['position'] == "Intern":
-                emp['bonus'] = 1000
-            else:
-                emp['bonus'] = 2000
-
-            print("Employee Updated!")
+    def view_employees(self):
+        """View employees in company"""
+        if not self.employees:
+            print("No employees available.")
             return
-    print("Employee not found!")
+        print("\n=== Company ===")
+        for i, employee in enumerate(self.employees, start=1):
+            print(f"{i}. {employee}")
 
-def delete_employee():
-    emp_name = input("Enter employee name to delete: ")
-    global employees
-    employees = [emp for emp in employees if emp['name'] != emp_name]
-    print("Employee Deleted!")
-
-def main():
+def company_menu():
+    """Company menu"""
+    company = Company()
     while True:
-        print("\n1. Add Employee\n2. Display Employees\n3. Update Employee\n4. Delete Employee\n5. Exit")
-        choice = input("Enter choice: ")
+        print("\n1. Add Employee\n2. View Employees\n3. Exit")
+        choice = input("Choose an option: ").strip()
         if choice == "1":
-            add_employee()
+            company.add_employee()
         elif choice == "2":
-            display_employees()
+            company.view_employees()
         elif choice == "3":
-            update_employee()
-        elif choice == "4":
-            delete_employee()
-        elif choice == "5":
             print("Exiting...")
             break
         else:
-            print("Invalid choice, try again.")
+            print("Invalid choice!")
 
-main()
+if __name__ == "__main__":
+    company_menu()

@@ -9,11 +9,11 @@ Code8  - 17.17 - unsuccessful (changed functionality)
 Code7  - 14.26 - unsuccessful (changed functionality)
 Code9  - 17.81 - success
 Code10 - 15.42 - unsuccessful (changed functionality)
-Code11 - 
-Code12 - 
-Code13 - 
-Code14 - 
-Code15 - 
+Code11 - 17.34 - success
+Code12 - 17.27 - unsuccessful (changed functionality)
+Code13 - 14.25 - success (change a bit on the print)
+Code14 - 13.52 - unsuccessful (changed functionality) (brutal failure)
+Code15 - 13.85 - unsuccessful (changed functionality) (brutal failure)
 Code16 - 
 Code17 - 
 Code18 - 
@@ -21,6 +21,13 @@ Code19 -
 Code20 - 
 
 --Notes--
+IMPORTANT :
+Change prompt to:
+"Please refactor this full Python code to improve readability, reduce cyclomatic complexity, and improve maintainability:
+DO NOT CHANGE THE MENU"
+in order to ask WindSurf not to change functionality, especially
+in the menu
+
 1. ***Prompt Change to Achieve Requirement***
 Changed the prompt to:
 Please refactor this full Python code to improve readability, reduce cyclomatic complexity, and improve maintainability:
@@ -47,3 +54,7 @@ means the AI also helps not only in refactoring the code but also
 helps find the better algorithm of searching.
 Rather than typing the student's ID to find student, just type out the
 student's number in the list.
+
+5. Code12, changed the menu when not asked to. So the prompt changed to
+"Please refactor this full Python code to improve readability, reduce cyclomatic complexity, and improve maintainability:
+DO NOT CHANGE THE MENU"

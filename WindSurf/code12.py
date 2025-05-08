@@ -1,78 +1,100 @@
-items = []
-transactions = []
+# WindSurf/code12.py
 
-def add_item():
-    print("\n=== Add Item ===")
-    name = input("Enter item name: ").strip()
-    price = input("Enter price: ").strip()
-    stock = input("Enter stock: ").strip()
-    
-    if not price.isdigit() or not stock.isdigit():
-        print("❌ Invalid input!")
-        return
-    
-    items.append([name, float(price), int(stock)])
-    print(f"✅ Added '{name}' to inventory.")
+class Item:
+    def __init__(self, name, price, stock):
+        self.name = name
+        self.price = price
+        self.stock = stock
 
-def view_items():
-    if not items:
-        print("📭 No items available.")
-        return
-    
-    print("\n=== Inventory ===")
-    for i, item in enumerate(items):
-        print(f"{i+1}. {item[0]} - ${item[1]:.2f} - Stock: {item[2]}")
+    def __str__(self):
+        return f"{self.name} - ${self.price:.2f} - Stock: {self.stock}"
 
-def sell_item():
-    view_items()
-    
-    try:
-        index = int(input("Enter item number: ")) - 1
-        qty = int(input("Enter quantity: "))
+class Inventory:
+    def __init__(self):
+        self.items = []
 
-        if index < 0 or index >= len(items):
-            print("❌ Invalid item number!")
+    def add_item(self):
+        """Add item to inventory"""
+        name = input("Enter item name: ").strip()
+        price = self.get_valid_price()
+        stock = self.get_valid_stock()
+        self.items.append(Item(name, price, stock))
+        print(f"Added '{name}' to inventory.")
+
+    def get_valid_price(self):
+        """Get valid price from user"""
+        while True:
+            try:
+                price = float(input("Enter price: ").strip())
+                if price <= 0:
+                    print("Price must be greater than zero.")
+                else:
+                    return price
+            except ValueError:
+                print("Invalid price. Please enter a number.")
+
+    def get_valid_stock(self):
+        """Get valid stock from user"""
+        while True:
+            try:
+                stock = int(input("Enter stock: ").strip())
+                if stock < 0:
+                    print("Stock cannot be negative.")
+                else:
+                    return stock
+            except ValueError:
+                print("Invalid stock. Please enter a whole number.")
+
+    def view_items(self):
+        """View items in inventory"""
+        if not self.items:
+            print("No items available.")
             return
+        print("\n=== Inventory ===")
+        for i, item in enumerate(self.items, start=1):
+            print(f"{i}. {item}")
 
-        if items[index][2] < qty:
-            print("❌ Not enough stock!")
-            return
-
-        total = items[index][1] * qty
-        items[index][2] -= qty
-        transactions.append([items[index][0], qty, total])
-        print(f"🛒 Sold {qty} x {items[index][0]} for ${total:.2f}")
-
-    except ValueError:
-        print("❌ Invalid input!")
-
-def view_transactions():
-    if not transactions:
-        print("📭 No transactions yet.")
-        return
-    
-    print("\n=== Transactions ===")
-    for t in transactions:
-        print(f"{t[1]} x {t[0]} - ${t[2]:.2f}")
+    def sell_item(self):
+        """Sell item from inventory"""
+        self.view_items()
+        try:
+            index = int(input("Enter item number: ")) - 1
+            if index < 0 or index >= len(self.items):
+                print("Invalid item number!")
+                return
+            qty = int(input("Enter quantity: "))
+            if self.items[index].stock < qty:
+                print("Not enough stock!")
+                return
+            # Update stock and print success message
+            self.items[index].stock -= qty
+            print(f"Sold {qty} {self.items[index].name}(s).")
+        except ValueError:
+            print("Invalid input!")
 
 def cashier_menu():
+    """Cashier menu"""
+    inventory = Inventory()
+    transactions = []
     while True:
         print("\n1. Add Item\n2. View Items\n3. Sell Item\n4. View Transactions\n5. Exit")
         choice = input("Choose an option: ").strip()
-
         if choice == "1":
-            add_item()
+            inventory.add_item()
         elif choice == "2":
-            view_items()
+            inventory.view_items()
         elif choice == "3":
-            sell_item()
+            self = inventory.sell_item()
+            transactions.append(self)
         elif choice == "4":
-            view_transactions()
+            print("\n=== Transactions ===")
+            for transaction in transactions:
+                print(transaction)
         elif choice == "5":
-            print("👋 Exiting...")
+            print("Exiting...")
             break
         else:
-            print("❌ Invalid choice!")
+            print("Invalid choice!")
 
 if __name__ == "__main__":
     cashier_menu()
