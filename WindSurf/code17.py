@@ -1,5 +1,4 @@
-import time
-import random
+# WindSurf/code17.py
 
 class Task:
     def __init__(self, title, desc, due, status="pending", priority=1):
@@ -21,110 +20,78 @@ class Task:
         self.end_time = time.time()
         self.logs.append("Task stopped")
 
-    def log_activity(self, msg):
-        self.logs.append(msg)
-
-    def calculate_duration(self):
-        return self.end_time - self.start_time
-
-    def update_status(self, s):
-        self.status = s
-        if s == "completed":
-            self.logs.append("Completed")
-        elif s == "cancelled":
-            self.logs.append("Cancelled")
-
-    def display_info(self):
-        print("Title:", self.title)
-        print("Description:", self.desc)
-        print("Due:", self.due)
-        print("Priority:", self.priority)
-        print("Status:", self.status)
-
-    def print_logs(self):
-        for log in self.logs:
-            print(log)
-
-    def delay_due(self, days):
-        self.due += days
-
-    def get_priority_value(self):
-        if self.priority == 1:
-            return "Low"
-        elif self.priority == 2:
-            return "Medium"
-        elif self.priority == 3:
-            return "High"
-        else:
-            return "Unknown"
+    def __str__(self):
+        return f"Title: {self.title}, Description: {self.desc}, Due: {self.due}, Status: {self.status}, Priority: {self.priority}"
 
 class TaskManager:
     def __init__(self):
-        self.task_list = []
-        self.last_task = None
+        self.tasks = []
 
-    def create_task(self, t, d, due, p=1):
-        task = Task(t, d, due, priority=p)
-        self.task_list.append(task)
-        self.last_task = task
+    def add_task(self):
+        task = self._get_task_details()
+        self.tasks.append(task)
+        print("Task Added!")
 
-    def show_tasks(self):
-        for t in self.task_list:
-            t.display_info()
-            print("---")
+    def _get_task_details(self):
+        title = input("Enter task title: ")
+        desc = input("Enter task description: ")
+        due = input("Enter task due date: ")
+        priority = int(input("Enter task priority: "))
 
-    def remove_task(self, task):
-        if task in self.task_list:
-            self.task_list.remove(task)
+        return Task(title, desc, due, priority=priority)
 
-    def remove_task_by_title(self, title):
-        for t in self.task_list:
-            if t.title == title:
-                self.task_list.remove(t)
-                return
+    def display_tasks(self):
+        if not self.tasks:
+            print("No tasks available.")
+            return
 
-    def count_completed(self):
-        count = 0
-        for t in self.task_list:
-            if t.status == "completed":
-                count += 1
-        return count
+        print("\n--- Task List ---")
+        for task in self.tasks:
+            print(task)
 
-    def auto_complete_low_priority(self):
-        for t in self.task_list:
-            if t.priority == 1:
-                t.update_status("completed")
+    def update_task(self):
+        title = input("Enter task title to update: ")
+        task = self._find_task(title)
+        if task:
+            task.title = input("Enter new title: ")
+            task.desc = input("Enter new description: ")
+            task.due = input("Enter new due date: ")
+            task.priority = int(input("Enter new priority: "))
+            print("Task Updated!")
+        else:
+            print("Task not found!")
 
-    def find_by_priority(self, p):
-        found = []
-        for t in self.task_list:
-            if t.priority == p:
-                found.append(t)
-        return found
+    def _find_task(self, title):
+        for task in self.tasks:
+            if task.title == title:
+                return task
+        return None
 
-    def export_task_titles(self):
-        f = open("tasks.txt", "w")
-        for t in self.task_list:
-            f.write(t.title + "\n")
-        f.close()
+    def delete_task(self):
+        title = input("Enter task title to delete: ")
+        self.tasks = [task for task in self.tasks if task.title != title]
+        print("Task Deleted!")
 
-    def add_random_tag_to_all(self):
-        tags = ["urgent", "review", "optional", "bug"]
-        for t in self.task_list:
-            t.tags.append(random.choice(tags))
+def main():
+    task_manager = TaskManager()
 
-# Main flow
-mgr = TaskManager()
-mgr.create_task("Fix login", "Users can’t log in after update", 3, 2)
-mgr.create_task("Update docs", "Add API usage examples", 5, 1)
-mgr.create_task("Deploy new build", "Push version 2.1", 2, 3)
+    while True:
+        print("\n1. Add Task\n2. Display Tasks\n3. Update Task\n4. Delete Task\n5. Exit")
+        choice = input("Enter choice: ")
 
-mgr.show_tasks()
-mgr.task_list[0].start()
-time.sleep(0.1)
-mgr.task_list[0].stop()
-mgr.task_list[0].print_logs()
+        if choice == "1":
+            task_manager.add_task()
+        elif choice == "2":
+            task_manager.display_tasks()
+        elif choice == "3":
+            task_manager.update_task()
+        elif choice == "4":
+            task_manager.delete_task()
+        elif choice == "5":
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice!")
 
-mgr.auto_complete_low_priority()
-mgr.export_task_titles()
-mgr.add_random_tag_to_all()
+if __name__ == "__main__":
+    main()

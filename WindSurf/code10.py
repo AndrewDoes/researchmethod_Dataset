@@ -1,75 +1,56 @@
 import json
 
-expenses = []
-FILE_NAME = "expenses.json"
+class ExpenseTracker:
+    def __init__(self, file_name):
+        self.expenses = []
+        self.file_name = file_name
 
-def load_expenses():
-    global expenses
-    try:
-        with open(FILE_NAME, "r") as f:
-            expenses = json.load(f)
-    except FileNotFoundError:
-        expenses = []
-    except json.JSONDecodeError:
-        print("Error loading expenses!")
-        expenses = []
+    def load_expenses(self):
+        try:
+            with open(self.file_name, "r") as f:
+                self.expenses = json.load(f)
+        except FileNotFoundError:
+            print(f"File {self.file_name} not found.")
 
-def save_expenses():
-    with open(FILE_NAME, "w") as f:
-        json.dump(expenses, f)
+    def add_expense(self):
+        expense = input("Enter expense: ")
+        self.expenses.append(expense)
+        self.save_expenses()
 
-def add_expense():
-    global expenses
-    print("\n=== Add Expense ===")
-    name = input("Enter expense name: ").strip()
-    cost = input("Enter cost: ").strip()
-    category = input("Enter category (Food, Travel, Bills): ").strip()
-    if not name or not cost.isdigit():
-        print("Invalid input!")
-        return
-    expenses.append({"name": name, "cost": int(cost), "category": category})
-    save_expenses()
-    print(f"Expense '{name}' added!")
+    def save_expenses(self):
+        with open(self.file_name, "w") as f:
+            json.dump(self.expenses, f)
 
-def view_expenses():
-    global expenses
-    print("\n=== Expense List ===")
-    if not expenses:
-        print("No expenses recorded.")
-        return
-    for i, exp in enumerate(expenses, start=1):
-        print(f"{i}. {exp['name']} - ${exp['cost']} - Category: {exp['category']}")
+    def view_expenses(self):
+        if not self.expenses:
+            print("No expenses available.")
+            return
+        print("\n--- Expense List ---")
+        for i, expense in enumerate(self.expenses, start=1):
+            print(f"{i}. {expense}")
 
-def remove_expense():
-    global expenses
-    view_expenses()
-    try:
-        num = int(input("Enter expense number to remove: "))
-        if 1 <= num <= len(expenses):
-            removed = expenses.pop(num - 1)
-            save_expenses()
-            print(f"Removed {removed['name']}")
-        else:
-            print("Invalid number!")
-    except ValueError:
-        print("Invalid input!")
+def main():
+    file_name = "expenses.json"
+    tracker = ExpenseTracker(file_name)
+    tracker.load_expenses()
 
-def menu():
-    load_expenses()
     while True:
-        print("\n1. Add Expense\n2. View Expenses\n3. Remove Expense\n4. Exit")
-        choice = input("Choose an option: ").strip()
+        print("\n--- Expense Tracker ---")
+        print("1. Add Expense")
+        print("2. View Expenses")
+        print("3. Quit")
+
+        choice = input("Enter your choice: ")
+
         if choice == "1":
-            add_expense()
+            tracker.add_expense()
         elif choice == "2":
-            view_expenses()
+            tracker.view_expenses()
         elif choice == "3":
-            remove_expense()
-        elif choice == "4":
             print("Exiting...")
             break
         else:
-            print("Invalid choice!")
+            print("Invalid choice. Please try again.")
 
 if __name__ == "__main__":
-    menu()
+    main()

@@ -1,3 +1,5 @@
+# WindSurf/code18.py
+
 import random
 
 class Drink:
@@ -9,91 +11,66 @@ class Drink:
         self.sugar = sugar
         self.custom_note = ""
 
-    def customize(self, ice, sugar, note=""):
-        self.ice = ice
-        self.sugar = sugar
+    def __str__(self):
+        return f"Name: {self.name}, Size: {self.size}, Price: {self.price}, Ice: {self.ice}, Sugar: {self.sugar}"
+
+    def add_custom_note(self, note):
         self.custom_note = note
-        print("Customization applied.")
 
-    def get_description(self):
-        desc = f"{self.size} {self.name} - ${self.price}"
-        if not self.ice:
-            desc += " | No Ice"
-        if not self.sugar:
-            desc += " | No Sugar"
-        if self.custom_note != "":
-            desc += f" | Note: {self.custom_note}"
-        return desc
+    def display_details(self):
+        print(f"Name: {self.name}")
+        print(f"Size: {self.size}")
+        print(f"Price: {self.price}")
+        print(f"Ice: {self.ice}")
+        print(f"Sugar: {self.sugar}")
+        if self.custom_note:
+            print(f"Custom Note: {self.custom_note}")
 
-class Order:
+class DrinkMenu:
     def __init__(self):
         self.drinks = []
-        self.total = 0.0
-        self.discount_applied = False
-        self.order_id = random.randint(1000, 9999)
-        self.loyalty_points = 0
-        self.payment_method = ""
 
     def add_drink(self, drink):
         self.drinks.append(drink)
-        self.total += drink.price
-        if len(self.drinks) > 3:
-            self.total -= 1  # arbitrary discount
-            self.discount_applied = True
 
-    def print_order(self):
-        print(f"Order ID: {self.order_id}")
-        for d in self.drinks:
-            print(d.get_description())
-        print(f"Total: ${self.total}")
-        if self.discount_applied:
-            print("Discount applied!")
-        print(f"Paid with: {self.payment_method}")
+    def display_menu(self):
+        for i, drink in enumerate(self.drinks, start=1):
+            print(f"{i}. {drink.name}")
 
-    def pay(self, method):
-        self.payment_method = method
-        self.loyalty_points += int(self.total // 2)
-        print("Payment successful.")
+    def get_drink(self, index):
+        try:
+            return self.drinks[index - 1]
+        except IndexError:
+            print("Invalid index")
+            return None
 
-    def cancel_order(self):
-        self.drinks.clear()
-        self.total = 0.0
-        self.discount_applied = False
-        self.payment_method = ""
-        self.loyalty_points = 0
-        print("Order cancelled.")
+def main():
+    drink_menu = DrinkMenu()
 
-class Barista:
-    def __init__(self, name):
-        self.name = name
-        self.orders_served = 0
-        self.current_order = None
+    while True:
+        print("\n1. Add Drink\n2. Display Menu\n3. Get Drink\n4. Exit")
+        choice = input("Enter choice: ")
 
-    def take_order(self, order):
-        self.current_order = order
-        print(f"{self.name} took the order.")
+        if choice == "1":
+            name = input("Enter drink name: ")
+            size = input("Enter drink size: ")
+            price = float(input("Enter drink price: "))
+            ice = input("Enter ice preference (yes/no): ").lower() == "yes"
+            sugar = input("Enter sugar preference (yes/no): ").lower() == "yes"
+            drink = Drink(name, size, price, ice, sugar)
+            drink_menu.add_drink(drink)
+        elif choice == "2":
+            drink_menu.display_menu()
+        elif choice == "3":
+            index = int(input("Enter drink index: "))
+            drink = drink_menu.get_drink(index)
+            if drink:
+                drink.display_details()
+        elif choice == "4":
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice!")
 
-    def serve_order(self):
-        if self.current_order:
-            self.orders_served += 1
-            print("Order served.")
-            self.current_order = None
-
-    def report(self):
-        print(f"Barista {self.name} served {self.orders_served} orders today.")
-
-# Sample usage
-drink1 = Drink("Green Tea", "Medium", 3.5)
-drink2 = Drink("Latte", "Large", 4.5)
-drink2.customize(False, True, "Extra hot")
-
-order = Order()
-order.add_drink(drink1)
-order.add_drink(drink2)
-order.pay("Credit Card")
-order.print_order()
-
-barista = Barista("Lina")
-barista.take_order(order)
-barista.serve_order()
-barista.report()
+if __name__ == "__main__":
+    main()

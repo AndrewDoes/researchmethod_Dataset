@@ -1,72 +1,92 @@
-products = []
+# WindSurf/code15.py
 
-def add_product():
-    print("Add Product")
-    name = input("Enter product name: ")
-    category = input("Enter category: ")
-    price = input("Enter price: ")
-    stock = input("Enter stock quantity: ")
+# Constants
+TAX_RATES = {
+    "Electronics": 18,
+    "Clothing": 5,
+    "Food": 12
+}
 
-    if category == "Electronics":
-        tax = 18
-    elif category == "Clothing":
-        tax = 5
-    elif category == "Food":
-        tax = 12
-    else:
-        tax = 8
+class Product:
+    def __init__(self, name, category, price, stock):
+        self.name = name
+        self.category = category
+        self.price = price
+        self.stock = stock
+        self.tax = self.calculate_tax()
 
-    products.append({"name": name, "category": category, "price": price, "stock": stock, "tax": tax})
-    print("Product Added!")
+    def calculate_tax(self):
+        return TAX_RATES.get(self.category, 8)
 
-def display_products():
-    print("\n--- Product List ---")
-    for p in products:
-        print(f"Name: {p['name']}, Category: {p['category']}, Price: {p['price']}, Stock: {p['stock']}, Tax: {p['tax']}%")
+    def __str__(self):
+        return f"Name: {self.name}, Category: {self.category}, Price: {self.price}, Stock: {self.stock}, Tax: {self.tax}%"
 
-def update_product():
-    prod_name = input("Enter product name to update: ")
-    for p in products:
-        if p['name'] == prod_name:
-            p['category'] = input("Enter new category: ")
-            p['price'] = input("Enter new price: ")
-            p['stock'] = input("Enter new stock quantity: ")
+class ProductManager:
+    def __init__(self):
+        self.products = []
 
-            if p['category'] == "Electronics":
-                p['tax'] = 18
-            elif p['category'] == "Clothing":
-                p['tax'] = 5
-            elif p['category'] == "Food":
-                p['tax'] = 12
-            else:
-                p['tax'] = 8
+    def add_product(self):
+        product = self._get_product_details()
+        self.products.append(product)
+        print("Product Added!")
 
-            print("Product Updated!")
+    def _get_product_details(self):
+        name = input("Enter product name: ")
+        category = input("Enter category: ")
+        price = input("Enter price: ")
+        stock = input("Enter stock quantity: ")
+        return Product(name, category, price, stock)
+
+    def display_products(self):
+        if not self.products:
+            print("No products available.")
             return
-    print("Product not found!")
 
-def delete_product():
-    prod_name = input("Enter product name to delete: ")
-    global products
-    products = [p for p in products if p['name'] != prod_name]
-    print("Product Deleted!")
+        print("\n--- Product List ---")
+        for product in self.products:
+            print(product)
+
+    def update_product(self):
+        name = input("Enter product name to update: ")
+        product = self._find_product(name)
+        if product:
+            product.price = input("Enter new price: ")
+            product.stock = input("Enter new stock quantity: ")
+            print("Product Updated!")
+        else:
+            print("Product not found!")
+
+    def _find_product(self, name):
+        for product in self.products:
+            if product.name == name:
+                return product
+        return None
+
+    def delete_product(self):
+        name = input("Enter product name to delete: ")
+        self.products = [product for product in self.products if product.name != name]
+        print("Product Deleted!")
 
 def main():
+    product_manager = ProductManager()
+
     while True:
         print("\n1. Add Product\n2. Display Products\n3. Update Product\n4. Delete Product\n5. Exit")
         choice = input("Enter choice: ")
+
         if choice == "1":
-            add_product()
+            product_manager.add_product()
         elif choice == "2":
-            display_products()
+            product_manager.display_products()
         elif choice == "3":
-            update_product()
+            product_manager.update_product()
         elif choice == "4":
-            delete_product()
+            product_manager.delete_product()
         elif choice == "5":
             print("Exiting...")
             break
         else:
-            print("Invalid choice, try again.")
+            print("Invalid choice!")
 
-main()
+if __name__ == "__main__":
+    main()

@@ -1,24 +1,24 @@
 Code     Time    Condition
-Code1  - 
-Code2  - 
-Code3  - 
-Code4  - 
-Code5  - 
-Code6  - 
-Code8  - 
-Code7  - 
-Code9  - 
-Code10 - 
-Code11 - 
-Code12 - 
-Code13 - 
-Code14 - 
-Code15 - 
-Code16 - 
-Code17 - 
-Code18 - 
-Code19 - 
-Code20 - 
+Code1  - 22.20 - success
+Code2  - 23.09 - success
+Code3  - 18.28 - success
+Code4  - 14.18 - failure
+Code5  - 18.99 - failure
+Code6  - 19.59 - success
+Code7  - 16.82 - failure
+Code8  - 15.56 - success
+Code9  - 21.94 - success
+Code10 - 14.84 - failure
+Code11 - 19.96 - failure
+Code12 - 17.08 - failure
+Code13 - 17.16 - failure
+Code14 - 19.51 - success
+Code15 - 19.37 - success
+Code16 - 16.66 - failure
+Code17 - 18.12 - failure
+Code18 - 18.36 - failure
+Code19 - 16.05 - failure
+Code20 - 14.23 - failure
 
 --Notes--
 IMPORTANT :
@@ -26,3 +26,57 @@ This is the report where the prompt is refined to:
 "Please refactor this full Python code to improve readability, reduce cyclomatic complexity, and improve maintainability:
 DO NOT CHANGE THE MENU"
 This is done to prevent Windsurf from changing the menu when not asked to
+
+1. ***code4.py***
+the menu has been changed
+
+2. ***code5.py***
+enemy's ability to heal is gone
+
+3. ***code7.py***
+attempt is not restarted after each game is done
+
+4. ***code10.py***
+remove expense menu missing after refactoring
+
+5. ***code11.py***
+remove item menu missing after refactoring
+
+6. ***code12.py***
+view transactions menu missing after refactoring
+
+7. ***code13.py***
+return book menu missing after refactoring
+even added a new error "expect 'except' or 'finally' block" because
+Windsurf didn't add finally after try, thus adding error to the code.
+
+8. ***code14.py***
+search changed using name instead of email, thus proving that the
+AI changed the functionality of the code. Doing more than what's needed
+
+9. ***code17.py***
+the AI changed the main code or method to menu instead of test cases
+thus showing that the AI is changing more than what's asked to be
+changed
+
+putting time in the code and not importing time thus adding
+problems or errors to the code
+
+10. ***code18.py***
+the AI changed the main code or method to menu instead of test cases
+thus showing that the AI is changing more than what's asked to be
+changed
+
+adding new code smells such as long method in the menu table
+thus showing that this AI isn't capable of refactoring a code effectively
+and efficiently
+
+11. ***code19.py***
+the AI changed the main code or method to menu instead of test cases
+thus showing that the AI is changing more than what's asked to be
+changed
+
+12. ***code20.py***
+the AI changed the main code or method to menu instead of test cases
+thus showing that the AI is changing more than what's asked to be
+changed

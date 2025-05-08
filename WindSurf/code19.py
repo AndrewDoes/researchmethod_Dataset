@@ -1,3 +1,5 @@
+# WindSurf/code19.py
+
 import random
 from typing import List
 
@@ -6,7 +8,10 @@ class Employee:
         self.name = name
         self.department = department
         self.salary = salary
-        self.performance_score = random.randint(1, 10)
+        self.performance_score = self._generate_performance_score()
+
+    def _generate_performance_score(self) -> int:
+        return random.randint(1, 10)
 
     def get_info(self) -> str:
         return f"Name: {self.name}, Department: {self.department}, Salary: {self.salary}, Performance Score: {self.performance_score}"
@@ -29,42 +34,60 @@ class EmployeeManager:
         self.total_salary += employee.salary
 
     def remove_employee(self, employee: Employee) -> None:
-        self.employees.remove(employee)
-        self.total_salary -= employee.salary
+        if employee in self.employees:
+            self.employees.remove(employee)
+            self.total_salary -= employee.salary
+        else:
+            print("Employee not found")
 
     def update_employee_salary(self, employee: Employee, amount: float) -> None:
-        employee.update_salary(amount)
-        self.total_salary += amount
+        if employee in self.employees:
+            employee.update_salary(amount)
+            self.total_salary += amount
+        else:
+            print("Employee not found")
 
-    def update_employee_performance(self, employee: Employee, score: int) -> None:
-        employee.update_performance(score)
-
-    def list_employees(self) -> None:
-        for emp in self.employees:
-            print(emp.get_info())
-
-    def generate_salary_report(self) -> None:
-        print(f"Total salary payout: {self.total_salary}")
-        print(f"Total number of employees: {len(self.employees)}")
+    def display_employees(self) -> None:
+        for employee in self.employees:
+            print(employee.get_info())
 
 def main():
-    manager = EmployeeManager()
+    employee_manager = EmployeeManager()
 
-    # Adding employees
-    employee1 = Employee("John Doe", "Engineering", 50000)
-    employee2 = Employee("Jane Smith", "Marketing", 45000)
+    while True:
+        print("\n1. Add Employee\n2. Remove Employee\n3. Update Employee Salary\n4. Display Employees\n5. Exit")
+        choice = input("Enter choice: ")
 
-    manager.add_employee(employee1)
-    manager.add_employee(employee2)
-
-    # Listing employees
-    manager.list_employees()
-
-    # Updating employee salary
-    manager.update_employee_salary(employee1, 5000)
-
-    # Generating salary report
-    manager.generate_salary_report()
+        if choice == "1":
+            name = input("Enter employee name: ")
+            department = input("Enter employee department: ")
+            salary = float(input("Enter employee salary: "))
+            employee = Employee(name, department, salary)
+            employee_manager.add_employee(employee)
+        elif choice == "2":
+            name = input("Enter employee name to remove: ")
+            for employee in employee_manager.employees:
+                if employee.name == name:
+                    employee_manager.remove_employee(employee)
+                    break
+            else:
+                print("Employee not found")
+        elif choice == "3":
+            name = input("Enter employee name to update salary: ")
+            for employee in employee_manager.employees:
+                if employee.name == name:
+                    amount = float(input("Enter salary update amount: "))
+                    employee_manager.update_employee_salary(employee, amount)
+                    break
+            else:
+                print("Employee not found")
+        elif choice == "4":
+            employee_manager.display_employees()
+        elif choice == "5":
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice!")
 
 if __name__ == "__main__":
     main()

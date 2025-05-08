@@ -1,72 +1,95 @@
-employees = []
+# WindSurf/code14.py
 
-def add_employee():
-    print("Add Employee")
-    name = input("Enter name: ")
-    age = input("Enter age: ")
-    position = input("Enter position: ")
-    salary = input("Enter salary: ")
+# Constants
+EMPLOYEE_POSITIONS = ["Manager", "Developer", "Intern"]
 
-    if position == "Manager":
-        bonus = 5000
-    elif position == "Developer":
-        bonus = 3000
-    elif position == "Intern":
-        bonus = 1000
-    else:
-        bonus = 2000
+class Employee:
+    def __init__(self, name, age, position, salary):
+        self.name = name
+        self.age = age
+        self.position = position
+        self.salary = salary
+        self.bonus = self.calculate_bonus()
 
-    employees.append({"name": name, "age": age, "position": position, "salary": salary, "bonus": bonus})
-    print("Employee Added!")
+    def calculate_bonus(self):
+        bonuses = {
+            "Manager": 5000,
+            "Developer": 3000,
+            "Intern": 1000
+        }
+        return bonuses.get(self.position, 2000)
 
-def display_employees():
-    print("\n--- Employee List ---")
-    for emp in employees:
-        print(f"Name: {emp['name']}, Age: {emp['age']}, Position: {emp['position']}, Salary: {emp['salary']}, Bonus: {emp['bonus']}")
+    def __str__(self):
+        return f"Name: {self.name}, Age: {self.age}, Position: {self.position}, Salary: {self.salary}, Bonus: {self.bonus}"
 
-def update_employee():
-    emp_name = input("Enter employee name to update: ")
-    for emp in employees:
-        if emp['name'] == emp_name:
-            emp['age'] = input("Enter new age: ")
-            emp['position'] = input("Enter new position: ")
-            emp['salary'] = input("Enter new salary: ")
+class EmployeeManager:
+    def __init__(self):
+        self.employees = []
 
-            if emp['position'] == "Manager":
-                emp['bonus'] = 5000
-            elif emp['position'] == "Developer":
-                emp['bonus'] = 3000
-            elif emp['position'] == "Intern":
-                emp['bonus'] = 1000
-            else:
-                emp['bonus'] = 2000
+    def add_employee(self):
+        employee = self._get_employee_details()
+        self.employees.append(employee)
+        print("Employee Added!")
 
-            print("Employee Updated!")
+    def _get_employee_details(self):
+        name = input("Enter name: ")
+        age = input("Enter age: ")
+        position = input("Enter position: ")
+        salary = input("Enter salary: ")
+        return Employee(name, age, position, salary)
+
+    def display_employees(self):
+        if not self.employees:
+            print("No employees available.")
             return
-    print("Employee not found!")
 
-def delete_employee():
-    emp_name = input("Enter employee name to delete: ")
-    global employees
-    employees = [emp for emp in employees if emp['name'] != emp_name]
-    print("Employee Deleted!")
+        print("\n--- Employee List ---")
+        for employee in self.employees:
+            print(employee)
+
+    def update_employee(self):
+        name = input("Enter employee name to update: ")
+        employee = self._find_employee(name)
+        if employee:
+            employee.age = input("Enter new age: ")
+            employee.position = input("Enter new position: ")
+            employee.salary = input("Enter new salary: ")
+            employee.bonus = employee.calculate_bonus()
+            print("Employee Updated!")
+        else:
+            print("Employee not found!")
+
+    def _find_employee(self, name):
+        for employee in self.employees:
+            if employee.name == name:
+                return employee
+        return None
+
+    def delete_employee(self):
+        name = input("Enter employee name to delete: ")
+        self.employees = [employee for employee in self.employees if employee.name != name]
+        print("Employee Deleted!")
 
 def main():
+    employee_manager = EmployeeManager()
+
     while True:
         print("\n1. Add Employee\n2. Display Employees\n3. Update Employee\n4. Delete Employee\n5. Exit")
         choice = input("Enter choice: ")
+
         if choice == "1":
-            add_employee()
+            employee_manager.add_employee()
         elif choice == "2":
-            display_employees()
+            employee_manager.display_employees()
         elif choice == "3":
-            update_employee()
+            employee_manager.update_employee()
         elif choice == "4":
-            delete_employee()
+            employee_manager.delete_employee()
         elif choice == "5":
             print("Exiting...")
             break
         else:
-            print("Invalid choice, try again.")
+            print("Invalid choice!")
 
-main()
+if __name__ == "__main__":
+    main()
