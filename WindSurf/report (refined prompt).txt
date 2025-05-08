@@ -24,7 +24,7 @@ Code20 - 14.23 - failure
 IMPORTANT :
 This is the report where the prompt is refined to:
 "Please refactor this full Python code to improve readability, reduce cyclomatic complexity, and improve maintainability:"
-This is done to prevent Windsurf from changing the menu when not asked to
+
 
 1. ***code4.py***
 the menu has been changed
