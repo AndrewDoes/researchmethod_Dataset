@@ -62,6 +62,10 @@ class Library:
             self.borrowed_books.append(book)
             print(f"📖 Borrowed '{book.title}' by {book.author}.")
 
+        #this except is a self add-on after refactoring in order to be able
+        #to proceed to analysis
+        except ValueError:
+            print("❌ Invalid input!")
 def library_menu():
     library = Library()
 
