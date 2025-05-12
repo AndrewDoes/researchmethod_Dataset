@@ -1,76 +1,73 @@
+# WindSurf Remastered/code6.py
+
+# Data Structures
+class Task:
+    def __init__(self, name, priority):
+        self.name = name
+        self.priority = priority
+        self.done = False
+
+# Global Variables
 tasks = []
-task_status = []
-priority = []
+
+# Functions
+def add_task():
+    name = input("Enter task name: ")
+    priority = input("Enter priority level (high, medium, low): ")
+    task = Task(name, priority)
+    tasks.append(task)
+    print(f"Task '{name}' added with priority {priority}.")
+
+def view_tasks():
+    if not tasks:
+        print("No tasks available.")
+        return
+    print("\n--- To-Do List ---")
+    for i, task in enumerate(tasks, start=1):
+        status = "Done" if task.done else "Not Done"
+        print(f"{i}. {task.name} - {status} - Priority: {task.priority}")
+
+def mark_task_done():
+    if not tasks:
+        print("No tasks available.")
+        return
+    view_tasks()
+    task_number = int(input("Enter task number to mark as done: ")) - 1
+    if task_number < 0 or task_number >= len(tasks):
+        print("Invalid task number.")
+        return
+    tasks[task_number].done = True
+    print(f"Task '{tasks[task_number].name}' marked as done.")
+
+def remove_task():
+    if not tasks:
+        print("No tasks available.")
+        return
+    view_tasks()
+    task_number = int(input("Enter task number to remove: ")) - 1
+    if task_number < 0 or task_number >= len(tasks):
+        print("Invalid task number.")
+        return
+    task_name = tasks.pop(task_number).name
+    print(f"Task '{task_name}' removed.")
 
 def start_app():
-    print("Welcome to the Messy To-Do List!")
     while True:
-        print("\n1. Add Task\n2. View Tasks\n3. Mark Task as Done\n4. Remove Task\n5. Quit")
+        print("\n1. Add Task\n2. View Tasks\n3. Mark Task Done\n4. Remove Task\n5. Quit")
         choice = input("Enter choice: ")
         if choice == "1":
             add_task()
         elif choice == "2":
             view_tasks()
         elif choice == "3":
-            mark_done()
+            mark_task_done()
         elif choice == "4":
             remove_task()
         elif choice == "5":
             print("Exiting...")
             break
         else:
-            print("Invalid choice, try again.")
+            print("Invalid choice.")
 
-def add_task():
-    task = input("Enter task description: ")
-    prio = input("Enter priority (High, Medium, Low): ")
-    if prio not in ["High", "Medium", "Low"]:
-        print("Invalid priority, defaulting to Low.")
-        prio = "Low"
-    tasks.append(task)
-    task_status.append(False)
-    priority.append(prio)
-    print(f"Task '{task}' added with priority {prio}.")
-
-def view_tasks():
-    if len(tasks) == 0:
-        print("No tasks available.")
-        return
-    print("\n--- To-Do List ---")
-    for i in range(len(tasks)):
-        status = "Done" if task_status[i] else "Not Done"
-        print(f"{i+1}. {tasks[i]} - {status} - Priority: {priority[i]}")
-
-def mark_done():
-    if len(tasks) == 0:
-        print("No tasks to mark.")
-        return
-    view_tasks()
-    try:
-        task_num = int(input("Enter task number to mark as done: ")) - 1
-        if 0 <= task_num < len(tasks):
-            task_status[task_num] = True
-            print(f"Task '{tasks[task_num]}' marked as done.")
-        else:
-            print("Invalid task number.")
-    except ValueError:
-        print("Please enter a valid number.")
-
-def remove_task():
-    if len(tasks) == 0:
-        print("No tasks to remove.")
-        return
-    view_tasks()
-    try:
-        task_num = int(input("Enter task number to remove: ")) - 1
-        if 0 <= task_num < len(tasks):
-            removed_task = tasks.pop(task_num)
-            task_status.pop(task_num)
-            priority.pop(task_num)
-            print(f"Task '{removed_task}' removed.")
-        else:
-            print("Invalid task number.")
-    except ValueError:
-        print("Please enter a valid number.")
-
-start_app()
+if __name__ == "__main__":
+    start_app()

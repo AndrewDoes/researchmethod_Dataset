@@ -1,65 +1,71 @@
-students = []
-grades = []
-IDs = []
+# WindSurf Remastered/code8.py
 
-def start():
-    print("Welcome to the Student Management System!")
-    while True:
-        print("\n1. Add Student\n2. View Students\n3. Update Grade\n4. Remove Student\n5. Quit")
-        choice = input("Enter choice: ")
-        if choice == "1":
-            add_student()
-        elif choice == "2":
-            view_students()
-        elif choice == "3":
-            update_grade()
-        elif choice == "4":
-            remove_student()
-        elif choice == "5":
-            print("Exiting...")
-            break
-        else:
-            print("Invalid choice!")
+class Student:
+    def __init__(self, name, ID, grade):
+        self.name = name
+        self.ID = ID
+        self.grade = grade
 
-def add_student():
-    name = input("Enter student name: ")
-    ID = input("Enter student ID: ")
-    if ID in IDs:
-        print("Student ID already exists!")
-        return
-    grade = input("Enter student grade: ")
-    students.append(name)
-    IDs.append(ID)
-    grades.append(grade)
-    print(f"Student {name} (ID: {ID}) added with grade {grade}.")
+class StudentManagementSystem:
+    def __init__(self):
+        self.students = []
 
-def view_students():
-    if len(students) == 0:
-        print("No students available.")
-        return
-    print("\n--- Student List ---")
-    for i in range(len(students)):
-        print(f"{students[i]} (ID: {IDs[i]}) - Grade: {grades[i]}")
+    def add_student(self):
+        name = input("Enter student name: ")
+        ID = input("Enter student ID: ")
+        if any(student.ID == ID for student in self.students):
+            print("Student ID already exists!")
+            return
+        grade = input("Enter student grade: ")
+        self.students.append(Student(name, ID, grade))
+        print(f"Student {name} (ID: {ID}) added with grade {grade}.")
 
-def update_grade():
-    ID = input("Enter student ID to update grade: ")
-    if ID not in IDs:
-        print("Student not found!")
-        return
-    index = IDs.index(ID)
-    new_grade = input("Enter new grade: ")
-    grades[index] = new_grade
-    print(f"Updated grade for {students[index]} (ID: {ID}) to {new_grade}.")
+    def view_students(self):
+        if not self.students:
+            print("No students available.")
+            return
+        print("\n--- Student List ---")
+        for student in self.students:
+            print(f"{student.name} (ID: {student.ID}) - Grade: {student.grade}")
 
-def remove_student():
-    ID = input("Enter student ID to remove: ")
-    if ID not in IDs:
-        print("Student not found!")
-        return
-    index = IDs.index(ID)
-    removed_name = students.pop(index)
-    IDs.pop(index)
-    grades.pop(index)
-    print(f"Student {removed_name} (ID: {ID}) removed.")
+    def update_grade(self):
+        ID = input("Enter student ID to update grade: ")
+        student = next((student for student in self.students if student.ID == ID), None)
+        if student is None:
+            print("Student not found!")
+            return
+        new_grade = input("Enter new grade: ")
+        student.grade = new_grade
+        print(f"Updated grade for {student.name} (ID: {ID}) to {new_grade}.")
 
-start()
+    def remove_student(self):
+        ID = input("Enter student ID to remove: ")
+        student = next((student for student in self.students if student.ID == ID), None)
+        if student is None:
+            print("Student not found!")
+            return
+        self.students.remove(student)
+        print(f"Student {student.name} (ID: {ID}) removed.")
+
+    def start(self):
+        print("Welcome to the Student Management System!")
+        while True:
+            print("\n1. Add Student\n2. View Students\n3. Update Grade\n4. Remove Student\n5. Quit")
+            choice = input("Enter choice: ")
+            if choice == "1":
+                self.add_student()
+            elif choice == "2":
+                self.view_students()
+            elif choice == "3":
+                self.update_grade()
+            elif choice == "4":
+                self.remove_student()
+            elif choice == "5":
+                print("Exiting...")
+                break
+            else:
+                print("Invalid choice!")
+
+if __name__ == "__main__":
+    system = StudentManagementSystem()
+    system.start()

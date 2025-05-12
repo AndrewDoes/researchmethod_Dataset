@@ -1,3 +1,12 @@
-codes;time;condition
-code1;18,01;failure
-code2;
+codes;time;condition;reason of failure
+code1;18,66;success
+code2;20,57;failure;added new errors
+code3;17,46;success
+code4;15,61;success
+code5;25,11;failure;added new errors
+code6;20,34;failure;changed functionality
+code7;17,96;success
+code8;18,54;success
+code9;17.66;success
+code10;17,14;success
+code11;
