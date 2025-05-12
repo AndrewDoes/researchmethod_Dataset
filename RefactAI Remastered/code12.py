@@ -1,78 +1,110 @@
-items = []
-transactions = []
+from dataclasses import dataclass
+from typing import List
 
-def add_item():
-    print("\n=== Add Item ===")
-    name = input("Enter item name: ").strip()
-    price = input("Enter price: ").strip()
-    stock = input("Enter stock: ").strip()
-    
-    if not price.isdigit() or not stock.isdigit():
-        print("❌ Invalid input!")
-        return
-    
-    items.append([name, float(price), int(stock)])
-    print(f"✅ Added '{name}' to inventory.")
+@dataclass
+class Item:
+    name: str
+    price: float
+    stock: int
 
-def view_items():
-    if not items:
-        print("📭 No items available.")
-        return
-    
-    print("\n=== Inventory ===")
-    for i, item in enumerate(items):
-        print(f"{i+1}. {item[0]} - ${item[1]:.2f} - Stock: {item[2]}")
+@dataclass
+class Transaction:
+    item_name: str
+    quantity: int
+    total: float
 
-def sell_item():
-    view_items()
-    
-    try:
-        index = int(input("Enter item number: ")) - 1
-        qty = int(input("Enter quantity: "))
+class CashierSystem:
+    def __init__(self):
+        self.items: List[Item] = []
+        self.transactions: List[Transaction] = []
 
-        if index < 0 or index >= len(items):
-            print("❌ Invalid item number!")
+    def add_item(self):
+        print("\n=== Add Item ===")
+        name = input("Enter item name: ").strip()
+        price = input("Enter price: ").strip()
+        stock = input("Enter stock: ").strip()
+
+        if not self.is_float(price) or not stock.isdigit():
+            print("❌ Invalid input!")
             return
 
-        if items[index][2] < qty:
-            print("❌ Not enough stock!")
+        self.items.append(Item(name, float(price), int(stock)))
+        print(f"✅ Added '{name}' to inventory.")
+
+    def view_items(self):
+        if not self.items:
+            print("📭 No items available.")
             return
 
-        total = items[index][1] * qty
-        items[index][2] -= qty
-        transactions.append([items[index][0], qty, total])
-        print(f"🛒 Sold {qty} x {items[index][0]} for ${total:.2f}")
+        print("\n=== Inventory ===")
+        for i, item in enumerate(self.items, 1):
+            print(f"{i}. {item.name} - ${item.price:.2f} - Stock: {item.stock}")
 
-    except ValueError:
-        print("❌ Invalid input!")
+    def sell_item(self):
+        self.view_items()
+        if not self.items:
+            return
 
-def view_transactions():
-    if not transactions:
-        print("📭 No transactions yet.")
-        return
-    
-    print("\n=== Transactions ===")
-    for t in transactions:
-        print(f"{t[1]} x {t[0]} - ${t[2]:.2f}")
+        try:
+            index = int(input("Enter item number: ")) - 1
+            qty = int(input("Enter quantity: "))
 
-def cashier_menu():
-    while True:
-        print("\n1. Add Item\n2. View Items\n3. Sell Item\n4. View Transactions\n5. Exit")
-        choice = input("Choose an option: ").strip()
+            if index < 0 or index >= len(self.items):
+                print("❌ Invalid item number!")
+                return
 
-        if choice == "1":
-            add_item()
-        elif choice == "2":
-            view_items()
-        elif choice == "3":
-            sell_item()
-        elif choice == "4":
-            view_transactions()
-        elif choice == "5":
-            print("👋 Exiting...")
-            break
-        else:
-            print("❌ Invalid choice!")
+            item = self.items[index]
+            if item.stock < qty:
+                print("❌ Not enough stock!")
+                return
+
+            total = item.price * qty
+            item.stock -= qty
+            self.transactions.append(Transaction(item.name, qty, total))
+            print(f"🛒 Sold {qty} x {item.name} for ${total:.2f}")
+
+        except ValueError:
+            print("❌ Invalid input!")
+
+    def view_transactions(self):
+        if not self.transactions:
+            print("📭 No transactions yet.")
+            return
+
+        print("\n=== Transactions ===")
+        for t in self.transactions:
+            print(f"{t.quantity} x {t.item_name} - ${t.total:.2f}")
+
+    def cashier_menu(self):
+        while True:
+            print("\n1. Add Item\n2. View Items\n3. Sell Item\n4. View Transactions\n5. Exit")
+            choice = input("Choose an option: ").strip()
+
+            if choice == "1":
+                self.add_item()
+            elif choice == "2":
+                self.view_items()
+            elif choice == "3":
+                self.sell_item()
+            elif choice == "4":
+                self.view_transactions()
+            elif choice == "5":
+                print("👋 Exiting...")
+                break
+            else:
+                print("❌ Invalid choice!")
+
+    @staticmethod
+    def is_float(value: str) -> bool:
+        try:
+            float(value)
+            return True
+        except ValueError:
+            return False
+
+def main():
+    system = CashierSystem()
+    system.cashier_menu()
 
 if __name__ == "__main__":
-    cashier_menu()
+    main()
