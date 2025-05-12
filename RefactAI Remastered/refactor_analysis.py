@@ -55,6 +55,6 @@ def analyze_directory(folder_path, output_csv):
     print(f"Analysis complete! Results saved to {output_csv}")
 
 if __name__ == "__main__":
-    input_folder = "QodoGen Remastered"      # Change this
+    input_folder = "python"      # Change this
     output_csv = os.path.join(input_folder, "analysis_results.csv")
     analyze_directory(input_folder, output_csv)

@@ -1,20 +1,15 @@
-
 import random
 
 class MenuItem:
-    def __init__(self, name, price, description=""):
-        self.name = name
-        self.price = price
-        self.description = description
+    def __init__(self, n, p, d=""):
+        self.name = n
+        self.price = p
+        self.description = d
 
     def get_info(self):
         return f"{self.name} - ${self.price:.2f}: {self.description}"
 
-
 class Order:
-    DISCOUNT_THRESHOLD = 3
-    DISCOUNT_AMOUNT = 2
-
     def __init__(self):
         self.items = []
         self.total = 0.0
@@ -36,7 +31,10 @@ class Order:
         for item in self.items:
             print(item.get_info())
         print(f"Total: ${self.total:.2f}")
-        print("Paid" if self.is_paid else "Not Paid")
+        if self.is_paid:
+            print("Paid")
+        else:
+            print("Not Paid")
 
     def pay(self, method):
         self.payment_method = method
@@ -44,10 +42,9 @@ class Order:
         print(f"Payment successful with {method}.")
 
     def apply_discount(self):
-        if len(self.items) > self.DISCOUNT_THRESHOLD:
-            self.total -= self.DISCOUNT_AMOUNT
+        if len(self.items) > 3:
+            self.total -= 2
             print("Discount applied.")
-
 
 class Cafe:
     def __init__(self, name):
@@ -72,62 +69,62 @@ class Cafe:
             order.print_order()
 
     def total_sales(self):
-        return sum(order.total for order in self.orders)
+        total = 0.0
+        for order in self.orders:
+            total += order.total
+        return total
 
     def generate_report(self):
         total_sales = self.total_sales()
         print(f"Total sales: ${total_sales:.2f}")
         print(f"Number of orders: {len(self.orders)}")
 
-
 def main():
     cafe = Cafe("The Cozy Cafe")
 
     # Menu items
-    menu_items = [
-        MenuItem("Coffee", 2.5, "Hot brewed coffee"),
-        MenuItem("Tea", 2.0, "Green or black tea"),
-        MenuItem("Sandwich", 5.0, "Freshly made sandwich"),
-        MenuItem("Cake", 3.0, "Chocolate cake")
-    ]
+    coffee = MenuItem("Coffee", 2.5, "Hot brewed coffee")
+    tea = MenuItem("Tea", 2.0, "Green or black tea")
+    sandwich = MenuItem("Sandwich", 5.0, "Freshly made sandwich")
+    cake = MenuItem("Cake", 3.0, "Chocolate cake")
 
     # Add menu items
-    for item in menu_items:
-        cafe.add_menu_item(item)
+    cafe.add_menu_item(coffee)
+    cafe.add_menu_item(tea)
+    cafe.add_menu_item(sandwich)
+    cafe.add_menu_item(cake)
 
     # Show menu
     cafe.show_menu()
 
-    # Orders
-    orders = [
-        Order(),
-        Order()
-    ]
+    # Order 1
+    order1 = Order()
+    order1.add_item(coffee)
+    order1.add_item(sandwich)
 
-    orders[0].add_item(menu_items[0])
-    orders[0].add_item(menu_items[2])
-    orders[1].add_item(menu_items[1])
-    orders[1].add_item(menu_items[3])
+    # Order 2
+    order2 = Order()
+    order2.add_item(tea)
+    order2.add_item(cake)
 
     # Take orders
-    for order in orders:
-        cafe.take_order(order)
+    cafe.take_order(order1)
+    cafe.take_order(order2)
 
     # Print orders
-    for order in orders:
-        order.print_order()
+    order1.print_order()
+    order2.print_order()
 
     # Apply discount to order 1
-    orders[0].apply_discount()
+    order1.apply_discount()
 
     # Process payments
-    orders[0].pay("Credit Card")
-    orders[1].pay("Cash")
+    order1.pay("Credit Card")
+    order2.pay("Cash")
 
     # Show cafe orders and sales report
     cafe.show_orders()
     cafe.generate_report()
-
 
 if __name__ == "__main__":
     main()
