@@ -1,4 +1,3 @@
-
 """
 Very advanced Employee management system.
 """
@@ -6,7 +5,7 @@ Very advanced Employee management system.
 from dataclasses import dataclass
 from typing import List
 
-FIXED_VACATION_DAYS_PAYOUT = 5  # The fixed nr of vacation days that can be paid out.
+FIXED_VACATION_DAYS_PAYOUT = 5  # The fixed number of vacation days that can be paid out.
 
 
 @dataclass
@@ -17,34 +16,37 @@ class Employee:
     role: str
     vacation_days: int = 25
 
-    def take_a_holiday(self, payout: bool) -> None:
-        """Let the employee take a single holiday, or pay out 5 holidays."""
+    def take_a_holiday(self, payout: bool = False) -> None:
+        """
+        Let the employee take a single holiday, or pay out a fixed number of holidays.
+        :param payout: If True, pay out FIXED_VACATION_DAYS_PAYOUT days. Otherwise, take 1 holiday.
+        """
         if payout:
-            # check that there are enough vacation days left for a payout
-            if self.vacation_days < FIXED_VACATION_DAYS_PAYOUT:
-                raise ValueError(
-                    f"You don't have enough holidays left over for a payout.\
-                        Remaining holidays: {self.vacation_days}."
-                )
-            try:
-                self.vacation_days -= FIXED_VACATION_DAYS_PAYOUT
-                print(f"Paying out a holiday. Holidays left: {self.vacation_days}")
-            except Exception:
-                # this should never happen
-                pass
+            self._payout_vacation_days()
         else:
-            if self.vacation_days < 1:
-                raise ValueError(
-                    "You don't have any holidays left. Now back to work, you!"
-                )
-            self.vacation_days -= 1
-            print("Have fun on your holiday. Don't forget to check your emails!")
+            self._take_single_holiday()
+
+    def _payout_vacation_days(self) -> None:
+        if self.vacation_days < FIXED_VACATION_DAYS_PAYOUT:
+            raise ValueError(
+                f"You don't have enough holidays left over for a payout. "
+                f"Remaining holidays: {self.vacation_days}."
+            )
+        self.vacation_days -= FIXED_VACATION_DAYS_PAYOUT
+        print(f"Paying out a holiday. Holidays left: {self.vacation_days}")
+
+    def _take_single_holiday(self) -> None:
+        if self.vacation_days < 1:
+            raise ValueError(
+                "You don't have any holidays left. Now back to work, you!"
+            )
+        self.vacation_days -= 1
+        print("Have fun on your holiday. Don't forget to check your emails!")
 
 
 @dataclass
 class HourlyEmployee(Employee):
     """Employee that's paid based on number of worked hours."""
-
     hourly_rate: float = 50
     amount: int = 10
 
@@ -52,7 +54,6 @@ class HourlyEmployee(Employee):
 @dataclass
 class SalariedEmployee(Employee):
     """Employee that's paid based on a fixed monthly salary."""
-
     monthly_salary: float = 5000
 
 
@@ -66,29 +67,21 @@ class Company:
         """Add an employee to the list of employees."""
         self.employees.append(employee)
 
+    def find_by_role(self, role: str) -> List[Employee]:
+        """Find all employees with a specific role."""
+        return [employee for employee in self.employees if employee.role == role]
+
     def find_managers(self) -> List[Employee]:
         """Find all manager employees."""
-        managers = []
-        for employee in self.employees:
-            if employee.role == "manager":
-                managers.append(employee)
-        return managers
+        return self.find_by_role("manager")
 
     def find_vice_presidents(self) -> List[Employee]:
         """Find all vice-president employees."""
-        vice_presidents = []
-        for employee in self.employees:
-            if employee.role == "vice_president":
-                vice_presidents.append(employee)
-        return vice_presidents
+        return self.find_by_role("vice_president")
 
     def find_interns(self) -> List[Employee]:
         """Find all interns."""
-        interns = []
-        for employee in self.employees:
-            if employee.role == "intern":
-                interns.append(employee)
-        return interns
+        return self.find_by_role("intern")
 
     def pay_employee(self, employee: Employee) -> None:
         """Pay an employee."""
@@ -98,9 +91,11 @@ class Company:
             )
         elif isinstance(employee, HourlyEmployee):
             print(
-                f"Paying employee {employee.name} a hourly rate of \
-                ${employee.hourly_rate} for {employee.amount} hours."
+                f"Paying employee {employee.name} a hourly rate of "
+                f"${employee.hourly_rate} for {employee.amount} hours."
             )
+        else:
+            print(f"Employee {employee.name} has an unknown payment structure.")
 
 
 def main() -> None:
