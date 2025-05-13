@@ -1,85 +1,159 @@
 import random
 
 class MenuItem:
-    def __init__(self, n, p, d=""):
-        self.name = n
-        self.price = p
-        self.description = d
+    def __init__(self, name: str, price: float, description: str = ""):
+        """
+        Initialize a MenuItem.
 
-    def get_info(self):
+        Args:
+            name (str): Name of the menu item.
+            price (float): Price of the menu item.
+            description (str, optional): Description of the menu item. Defaults to "".
+        """
+        self.name = name
+        self.price = price
+        self.description = description
+
+    def get_info(self) -> str:
+        """
+        Get the formatted information of the menu item.
+
+        Returns:
+            str: Formatted information of the menu item.
+        """
         return f"{self.name} - ${self.price:.2f}: {self.description}"
+
 
 class Order:
     def __init__(self):
+        """
+        Initialize an Order.
+        """
         self.items = []
         self.total = 0.0
         self.order_id = random.randint(1000, 9999)
         self.payment_method = ""
         self.is_paid = False
 
-    def add_item(self, item):
+    def add_item(self, item: MenuItem) -> None:
+        """
+        Add a menu item to the order.
+
+        Args:
+            item (MenuItem): Menu item to add.
+        """
         self.items.append(item)
         self.total += item.price
 
-    def remove_item(self, item):
+    def remove_item(self, item: MenuItem) -> None:
+        """
+        Remove a menu item from the order.
+
+        Args:
+            item (MenuItem): Menu item to remove.
+        """
         if item in self.items:
             self.items.remove(item)
             self.total -= item.price
 
-    def print_order(self):
+    def print_order(self) -> None:
+        """
+        Print the order details.
+        """
         print(f"Order ID: {self.order_id}")
         for item in self.items:
             print(item.get_info())
         print(f"Total: ${self.total:.2f}")
-        if self.is_paid:
-            print("Paid")
-        else:
-            print("Not Paid")
+        print("Paid" if self.is_paid else "Not Paid")
 
-    def pay(self, method):
+    def pay(self, method: str) -> None:
+        """
+        Pay for the order.
+
+        Args:
+            method (str): Payment method.
+        """
         self.payment_method = method
         self.is_paid = True
         print(f"Payment successful with {method}.")
 
-    def apply_discount(self):
+    def apply_discount(self) -> None:
+        """
+        Apply a discount to the order if it has more than 3 items.
+        """
         if len(self.items) > 3:
             self.total -= 2
             print("Discount applied.")
 
+
 class Cafe:
-    def __init__(self, name):
+    def __init__(self, name: str):
+        """
+        Initialize a Cafe.
+
+        Args:
+            name (str): Name of the cafe.
+        """
         self.name = name
         self.menu = []
         self.orders = []
 
-    def add_menu_item(self, item):
+    def add_menu_item(self, item: MenuItem) -> None:
+        """
+        Add a menu item to the cafe's menu.
+
+        Args:
+            item (MenuItem): Menu item to add.
+        """
         self.menu.append(item)
 
-    def show_menu(self):
+    def show_menu(self) -> None:
+        """
+        Print the cafe's menu.
+        """
         print(f"Menu for {self.name}:")
         for item in self.menu:
             print(item.get_info())
 
-    def take_order(self, order):
+    def take_order(self, order: Order) -> None:
+        """
+        Take an order.
+
+        Args:
+            order (Order): Order to take.
+        """
         self.orders.append(order)
         print(f"Order {order.order_id} has been placed.")
 
-    def show_orders(self):
+    def show_orders(self) -> None:
+        """
+        Print all orders.
+        """
         for order in self.orders:
             order.print_order()
 
-    def total_sales(self):
+    def total_sales(self) -> float:
+        """
+        Calculate the total sales.
+
+        Returns:
+            float: Total sales.
+        """
         total = 0.0
         for order in self.orders:
             total += order.total
         return total
 
-    def generate_report(self):
+    def generate_report(self) -> None:
+        """
+        Generate a sales report.
+        """
         total_sales = self.total_sales()
         print(f"Total sales: ${total_sales:.2f}")
         print(f"Number of orders: {len(self.orders)}")
 
-def main():
+
+def main() -> None:
     cafe = Cafe("The Cozy Cafe")
 
     # Menu items
@@ -94,37 +168,4 @@ def main():
     cafe.add_menu_item(sandwich)
     cafe.add_menu_item(cake)
 
-    # Show menu
-    cafe.show_menu()
-
-    # Order 1
-    order1 = Order()
-    order1.add_item(coffee)
-    order1.add_item(sandwich)
-
-    # Order 2
-    order2 = Order()
-    order2.add_item(tea)
-    order2.add_item(cake)
-
-    # Take orders
-    cafe.take_order(order1)
-    cafe.take_order(order2)
-
-    # Print orders
-    order1.print_order()
-    order2.print_order()
-
-    # Apply discount to order 1
-    order1.apply_discount()
-
-    # Process payments
-    order1.pay("Credit Card")
-    order2.pay("Cash")
-
-    # Show cafe orders and sales report
-    cafe.show_orders()
-    cafe.generate_report()
-
-if __name__ == "__main__":
-    main()
+   

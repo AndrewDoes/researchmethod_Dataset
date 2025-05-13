@@ -1,68 +1,92 @@
-users = []
+# Constants
+ROLES = {
+    "Minor": lambda age: age < 18,
+    "Adult": lambda age: 18 <= age <= 60,
+    "Senior": lambda age: age > 60
+}
 
-def register_user():
-    print("Register User")
-    name = input("Enter name: ")
-    email = input("Enter email: ")
-    password = input("Enter password: ")
-    age = int(input("Enter age: "))
+# Data Structures
+class User:
+    def __init__(self, name, email, password, age):
+        self.name = name
+        self.email = email
+        self.password = password
+        self.age = age
+        self.role = self.calculate_role()
 
-    if age < 18:
-        role = "Minor"
-    elif age >= 18 and age <= 60:
-        role = "Adult"
-    else:
-        role = "Senior"
+    def calculate_role(self):
+        for role, condition in ROLES.items():
+            if condition(self.age):
+                return role
+        return "Unknown"
 
-    users.append({"name": name, "email": email, "password": password, "age": age, "role": role})
-    print("User Registered!")
+    def update(self, name=None, password=None, age=None):
+        if name:
+            self.name = name
+        if password:
+            self.password = password
+        if age:
+            self.age = age
+            self.role = self.calculate_role()
 
-def display_users():
-    print("\n--- User List ---")
-    for u in users:
-        print(f"Name: {u['name']}, Email: {u['email']}, Age: {u['age']}, Role: {u['role']}")
+    def __str__(self):
+        return f"Name: {self.name}, Email: {self.email}, Age: {self.age}, Role: {self.role}"
 
-def update_user():
-    email = input("Enter email to update: ")
-    for u in users:
-        if u['email'] == email:
-            u['name'] = input("Enter new name: ")
-            u['password'] = input("Enter new password: ")
-            u['age'] = int(input("Enter new age: "))
+# Functions
+class UserManager:
+    def __init__(self):
+        self.users = []
 
-            if u['age'] < 18:
-                u['role'] = "Minor"
-            elif u['age'] >= 18 and u['age'] <= 60:
-                u['role'] = "Adult"
-            else:
-                u['role'] = "Senior"
+    def register_user(self):
+        name = input("Enter name: ")
+        email = input("Enter email: ")
+        password = input("Enter password: ")
+        age = int(input("Enter age: "))
+        self.users.append(User(name, email, password, age))
+        print("User Registered!")
 
-            print("User Updated!")
-            return
-    print("User not found!")
+    def display_users(self):
+        print("\n--- User List ---")
+        for user in self.users:
+            print(user)
 
-def delete_user():
-    email = input("Enter email to delete: ")
-    global users
-    users = [u for u in users if u['email'] != email]
-    print("User Deleted!")
+    def update_user(self):
+        email = input("Enter email to update: ")
+        for user in self.users:
+            if user.email == email:
+                user.update(
+                    name=input("Enter new name: "),
+                    password=input("Enter new password: "),
+                    age=int(input("Enter new age: "))
+                )
+                print("User Updated!")
+                return
+        print("User not found!")
 
+    def delete_user(self):
+        email = input("Enter email to delete: ")
+        self.users = [u for u in self.users if u.email != email]
+        print("User Deleted!")
+
+# Main function
 def main():
+    user_manager = UserManager()
     while True:
         print("\n1. Register User\n2. Display Users\n3. Update User\n4. Delete User\n5. Exit")
         choice = input("Enter choice: ")
         if choice == "1":
-            register_user()
+            user_manager.register_user()
         elif choice == "2":
-            display_users()
+            user_manager.display_users()
         elif choice == "3":
-            update_user()
+            user_manager.update_user()
         elif choice == "4":
-            delete_user()
+            user_manager.delete_user()
         elif choice == "5":
             print("Exiting...")
             break
         else:
             print("Invalid choice, try again.")
 
-main()
+if __name__ == "__main__":
+    main()

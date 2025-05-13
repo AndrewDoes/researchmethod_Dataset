@@ -9,7 +9,12 @@ class Employee:
         self.performance_score = random.randint(1, 10)
 
     def get_info(self) -> str:
-        return f"Name: {self.name}, Department: {self.department}, Salary: {self.salary}, Performance Score: {self.performance_score}"
+        return (
+            f"Name: {self.name}, "
+            f"Department: {self.department}, "
+            f"Salary: {self.salary}, "
+            f"Performance Score: {self.performance_score}"
+        )
 
     def update_salary(self, amount: float) -> None:
         self.salary += amount
@@ -18,6 +23,7 @@ class Employee:
     def update_performance(self, score: int) -> None:
         self.performance_score = score
         print(f"Performance score of {self.name} updated to {self.performance_score}")
+
 
 class EmployeeManager:
     def __init__(self):
@@ -47,6 +53,7 @@ class EmployeeManager:
         print(f"Total salary payout: {self.total_salary}")
         print(f"Total number of employees: {len(self.employees)}")
 
+
 def main():
     manager = EmployeeManager()
 
@@ -65,6 +72,7 @@ def main():
 
     # Generating salary report
     manager.generate_salary_report()
+
 
 if __name__ == "__main__":
     main()
