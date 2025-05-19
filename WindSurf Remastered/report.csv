@@ -1,21 +1,21 @@
 codes;time;condition;reason of failure
-code1;18,66;success
+code1;18,66;success;
 code2;20,57;failure;added new errors
-code3;17,46;success
-code4;15,61;success
+code3;17,46;success;
+code4;15,61;success;
 code5;25,11;failure;added new errors
 code6;20,34;failure;changed functionality
-code7;17,96;success
-code8;18,54;success
-code9;17.66;success
-code10;17,14;success
-code11;23,46;success
-code12;25,61;success
-code13;21.22;success
-code14;21,62;success
-code15;22,61;success
-code16;26,90;success
-code17;30.05;success
+code7;17,96;success;
+code8;18,54;success;
+code9;17,66;success;
+code10;17,14;success;
+code11;23,46;success;
+code12;25,61;success;
+code13;21,22;success;
+code14;21,62;success;
+code15;22,61;success;
+code16;26,9;success;
+code17;30,05;success;
 code18;32,67;failure;changed test cases
-code19;20,95;success
+code19;20,95;success;
 code20;25,21;failure;no output & changed functionality
